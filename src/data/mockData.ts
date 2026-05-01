@@ -98,8 +98,8 @@ export const auditLogs = Array.from({ length: 15 }).map((_, i) => ({
 }));
 
 export const crmCustomers = [
-  { id: 'CUST-001', name: 'Acme Corp', email: 'contact@acmecorp.com', lastInteraction: '2 hours ago', segment: 'High Value' },
-  { id: 'CUST-002', name: 'Global Tech', email: 'info@globaltech.com', lastInteraction: '1 day ago', segment: 'Medium Value' },
-  { id: 'CUST-003', name: 'Startup Inc', email: 'hello@startupinc.io', lastInteraction: '3 days ago', segment: 'Low Value' },
-  { id: 'CUST-004', name: 'Enterprise LLC', email: 'admin@enterprisellc.com', lastInteraction: '5 mins ago', segment: 'High Value' },
+  { id: 'CUST-001', name: 'Acme Corp', email: 'contact@acmecorp.com', lastInteraction: '2 hours ago', segment: 'High Value', role: 'Customer' },
+  { id: 'CUST-002', name: 'Global Tech', email: 'info@globaltech.com', lastInteraction: '1 day ago', segment: 'Medium Value', role: 'System Admin' },
+  { id: 'CUST-003', name: 'Startup Inc', email: 'hello@startupinc.io', lastInteraction: '3 days ago', segment: 'Low Value', role: 'Customer' },
+  { id: 'CUST-004', name: 'Enterprise LLC', email: 'admin@enterprisellc.com', lastInteraction: '5 mins ago', segment: 'High Value', role: 'Customer' },
 ];

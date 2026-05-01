@@ -1,11 +1,14 @@
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { DashboardPage } from './pages/DashboardPage';
+import { SalesTrendsPage } from './pages/SalesTrendsPage';
 import { AIInsightsPage } from './pages/AIInsightsPage';
 import { InventoryPage } from './pages/InventoryPage';
 import { AuditPage } from './pages/AuditPage';
 import { CRMPage } from './pages/CRMPage';
 import { AnomalyDetectionPage } from './pages/AnomalyDetectionPage';
 import { CustomerSegmentsPage } from './pages/CustomerSegmentsPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { AdministrationPage } from './pages/AdministrationPage';
 import { AIProvider } from './contexts/AIContext';
 
 export default function App() {
@@ -15,8 +18,9 @@ export default function App() {
         {(activePath) => {
           switch (activePath) {
             case 'dashboard':
-            case 'sales':
               return <DashboardPage />;
+            case 'sales':
+              return <SalesTrendsPage />;
             case 'insights':
               return <AIInsightsPage />;
             case 'anomalies':
@@ -28,8 +32,11 @@ export default function App() {
             case 'audit':
               return <AuditPage />;
             case 'crm':
-            case 'settings':
               return <CRMPage />;
+            case 'administration':
+              return <AdministrationPage />;
+            case 'settings':
+              return <SettingsPage />;
             default:
               return (
                 <div className="flex items-center justify-center h-full">

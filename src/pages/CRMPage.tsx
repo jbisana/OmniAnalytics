@@ -117,77 +117,14 @@ export function CRMPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Team Roles & Access</CardTitle>
-            <CardDescription>Manage your internal team members and their permission levels.</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-xs text-gray-500 bg-gray-50/50 uppercase border-y border-gray-200">
-                  <tr>
-                    <th className="px-6 py-4 font-medium">Member</th>
-                    <th className="px-6 py-4 font-medium">Role</th>
-                    <th className="px-6 py-4 font-medium">Status</th>
-                    <th className="px-6 py-4 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium">
-                            {user.name.charAt(0)}
-                          </div>
-                          <div>
-                            <div className="font-medium text-gray-900">{user.name}</div>
-                            <div className="text-xs text-gray-500 flex items-center gap-1">
-                              <Mail className="w-3 h-3" /> {user.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-gray-400" />
-                          <select 
-                            value={user.role} 
-                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                            className="bg-transparent font-medium text-gray-700 border-b border-dashed border-gray-300 focus:border-blue-500 focus:ring-0 cursor-pointer pb-0.5 outline-none"
-                          >
-                            {availableRoles.map(r => <option key={r} value={r}>{r}</option>)}
-                          </select>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Badge variant={user.status === 'Active' ? 'success' : user.status === 'Away' ? 'warning' : 'destructive'}>
-                          {user.status}
-                        </Badge>
-                        <div className="text-xs text-gray-400 mt-1">{user.lastActive}</div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <Button variant="ghost" size="sm">
-                          <Settings2 className="w-4 h-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>System Integrations</CardTitle>
             <CardDescription>Active connections to 3rd party ERPs and tools.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center justify-between p-4 rounded-xl border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">

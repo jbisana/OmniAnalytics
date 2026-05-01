@@ -82,6 +82,23 @@ async function startServer() {
     res.json(serverCrmActivity);
   });
 
+  // Alert Settings Endpoint
+  let serverAlertSettings = {
+    criticalStock: true,
+    lowStock: true,
+    newCustomer: false,
+    anomalies: true,
+  };
+
+  app.get('/api/settings/alerts', (req, res) => {
+    res.json(serverAlertSettings);
+  });
+
+  app.post('/api/settings/alerts', (req, res) => {
+    serverAlertSettings = { ...serverAlertSettings, ...req.body };
+    res.json({ success: true, settings: serverAlertSettings });
+  });
+
   // Simulate server-side stock drop logic (moved from client)
   setInterval(() => {
     let changed = false;
@@ -98,7 +115,7 @@ async function startServer() {
         else if (newStock <= item.threshold) newStatus = 'Low Stock';
         
         // Critical stock alert email notification
-        if (newStock <= item.criticalThreshold && oldStock > item.criticalThreshold) {
+        if (serverAlertSettings.criticalStock && newStock <= item.criticalThreshold && oldStock > item.criticalThreshold) {
           const admins = serverCrmCustomers.filter(c => c.role === 'System Admin');
           admins.forEach(admin => {
             console.log(`[EMAIL NOTIFICATION] To: ${admin.email} | Subject: CRITICAL STOCK ALERT - ${item.name} | Body: Stock has dropped to ${newStock}.`);

@@ -17,7 +17,8 @@ import {
   PieChart,
   Sparkles,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Shield
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -28,15 +29,22 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { name: 'Dashboard', path: 'dashboard', icon: LayoutDashboard },
-  { name: 'Sales & Trends', path: 'sales', icon: BarChart3 },
-  { name: 'AI Insights', path: 'insights', icon: Sparkles },
-  { name: 'Anomaly Detection', path: 'anomalies', icon: AlertTriangle },
-  { name: 'Customer Segments', path: 'segments', icon: PieChart },
-  { name: 'CRM & Customers', path: 'crm', icon: Users },
-  { name: 'Inventory', path: 'inventory', icon: ShoppingBag },
-  { name: 'Audit Trail', path: 'audit', icon: History },
-  { name: 'Settings', path: 'settings', icon: Settings },
+  { group: 'Main', items: [
+    { name: 'Dashboard', path: 'dashboard', icon: LayoutDashboard },
+    { name: 'Sales & Trends', path: 'sales', icon: BarChart3 },
+    { name: 'CRM & Customers', path: 'crm', icon: Users },
+    { name: 'Inventory', path: 'inventory', icon: ShoppingBag },
+  ]},
+  { group: 'AI Features', items: [
+    { name: 'AI Insights', path: 'insights', icon: Sparkles },
+    { name: 'Anomaly Detection', path: 'anomalies', icon: AlertTriangle },
+    { name: 'Customer Segments', path: 'segments', icon: PieChart },
+  ]},
+  { group: 'Preferences', items: [
+    { name: 'Administration', path: 'administration', icon: Shield },
+    { name: 'Audit Trail', path: 'audit', icon: History },
+    { name: 'Settings', path: 'settings', icon: Settings },
+  ]}
 ];
 
 export function DashboardLayout({ children }: { children: (activePath: string) => React.ReactNode }) {
@@ -70,27 +78,36 @@ export function DashboardLayout({ children }: { children: (activePath: string) =
           </button>
         </div>
 
-        <nav className="flex-1 py-6 px-3 overflow-y-auto space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activePath === item.path;
-            return (
-              <button
-                key={item.path}
-                onClick={() => setActivePath(item.path)}
-                title={!isOpen ? item.name : undefined}
-                className={cn(
-                  "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg transition-colors group",
-                  isActive 
-                    ? "bg-blue-50 text-blue-700 font-medium" 
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                )}
-              >
-                <Icon size={20} className={cn("shrink-0", isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600")} />
-                {isOpen && <span className="truncate">{item.name}</span>}
-              </button>
-            )
-          })}
+        <nav className="flex-1 py-6 px-3 overflow-y-auto custom-scrollbar">
+          {navItems.map((group, groupIdx) => (
+            <div key={group.group} className={cn("space-y-1", groupIdx !== 0 && "mt-6")}>
+              {isOpen && (
+                <h3 className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                  {group.group}
+                </h3>
+              )}
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = activePath === item.path;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => setActivePath(item.path)}
+                    title={!isOpen ? item.name : undefined}
+                    className={cn(
+                      "flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-colors group",
+                      isActive 
+                        ? "bg-blue-50 text-blue-700 font-medium" 
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    )}
+                  >
+                    <Icon size={20} className={cn("shrink-0", isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600")} />
+                    {isOpen && <span className="truncate">{item.name}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
         </nav>
 
         <div className="p-4 border-t border-gray-200 shrink-0">

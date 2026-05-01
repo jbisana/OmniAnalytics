@@ -5,12 +5,15 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Bell, ChevronDown, ChevronUp, Image as ImageIcon, Star, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 export function InventoryPage() {
   const [inventory, setInventory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [toasts, setToasts] = useState<{id: string, message: string}[]>([]);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [exportFilter, setExportFilter] = useState('All');
+  const [historyFilter, setHistoryFilter] = useState<'7d' | '30d' | 'all'>('all');
 
   const addToast = (message: string) => {
     const id = Math.random().toString(36);
@@ -45,6 +48,13 @@ export function InventoryPage() {
   useEffect(() => {
     let oldInventoryMap = new Map<string, number>();
 
+    // Also fetch alert settings
+    let alertSettings = { criticalStock: true, lowStock: true, newCustomer: false, anomalies: true };
+    fetch('/api/settings/alerts')
+      .then(res => res.json())
+      .then(data => { alertSettings = data; })
+      .catch(console.error);
+
     const es = new EventSource('/api/inventory/stream');
     es.onmessage = (event) => {
       try {
@@ -55,9 +65,9 @@ export function InventoryPage() {
           const oldStock = oldInventoryMap.get(newItem.id);
           if (oldStock !== undefined && oldStock > newItem.stock) {
             // Did it just drop?
-            if (newItem.stock <= newItem.criticalThreshold && oldStock > newItem.criticalThreshold) {
+            if (alertSettings.criticalStock && newItem.stock <= newItem.criticalThreshold && oldStock > newItem.criticalThreshold) {
               alerts.push(`CRITICAL: ${newItem.name} stock dropped to ${newItem.stock}!!`);
-            } else if (newItem.stock <= newItem.threshold && oldStock > newItem.threshold) {
+            } else if (alertSettings.lowStock && newItem.stock <= newItem.threshold && oldStock > newItem.threshold) {
               alerts.push(`Alert: ${newItem.name} low stock (${newItem.stock})`);
             }
           }
@@ -272,11 +282,22 @@ export function InventoryPage() {
                               </div>
                             </div>
                             
-                            <div>
-                              <h4 className="font-semibold text-gray-900 mb-3">Stock History</h4>
-                              <div className="bg-white border text-sm border-gray-200 rounded-lg overflow-hidden">
+                            <div className="flex flex-col h-full">
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="font-semibold text-gray-900">Stock History</h4>
+                                <select 
+                                  value={historyFilter} 
+                                  onChange={(e) => setHistoryFilter(e.target.value as any)}
+                                  className="border border-gray-200 rounded text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                >
+                                  <option value="7d">Last 7 Days</option>
+                                  <option value="30d">Last 30 Days</option>
+                                  <option value="all">All Time</option>
+                                </select>
+                              </div>
+                              <div className="bg-white border text-sm border-gray-200 rounded-lg overflow-y-auto max-h-48 custom-scrollbar mb-6">
                                 <table className="w-full text-left">
-                                  <thead className="bg-gray-50 text-xs text-gray-500">
+                                  <thead className="bg-gray-50 text-xs text-gray-500 sticky top-0">
                                     <tr>
                                       <th className="px-4 py-2 font-medium">Date/Time</th>
                                       <th className="px-4 py-2 font-medium">Change</th>
@@ -284,22 +305,52 @@ export function InventoryPage() {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {item.history && item.history.length > 0 ? item.history.map((hist: any, hIdx: number) => (
-                                      <tr key={hIdx} className="border-t border-gray-100">
-                                        <td className="px-4 py-2 text-gray-500">{hist.date}</td>
-                                        <td className="px-4 py-2">
-                                          <span className={`font-mono font-medium ${String(hist.change).startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                                            {hist.change}
-                                          </span>
-                                        </td>
-                                        <td className="px-4 py-2 text-gray-900">{hist.reason}</td>
-                                      </tr>
-                                    )) : (
-                                      <tr><td colSpan={3} className="px-4 py-4 text-center text-gray-500 italic">No recent history</td></tr>
-                                    )}
+                                    {(() => {
+                                      const filtered = item.history ? item.history.slice(0, historyFilter === '7d' ? 7 : historyFilter === '30d' ? 30 : undefined) : [];
+                                      return filtered.length > 0 ? filtered.map((hist: any, hIdx: number) => (
+                                        <tr key={hIdx} className="border-t border-gray-100">
+                                          <td className="px-4 py-2 text-gray-500">{hist.date}</td>
+                                          <td className="px-4 py-2">
+                                            <span className={`font-mono font-medium ${String(hist.change).startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                                              {hist.change}
+                                            </span>
+                                          </td>
+                                          <td className="px-4 py-2 text-gray-900">{hist.reason}</td>
+                                        </tr>
+                                      )) : (
+                                        <tr><td colSpan={3} className="px-4 py-4 text-center text-gray-500 italic">No recent history</td></tr>
+                                      );
+                                    })()}
                                   </tbody>
                                 </table>
                               </div>
+                              
+                              {(() => {
+                                const filtered = item.history ? item.history.slice(0, historyFilter === '7d' ? 7 : historyFilter === '30d' ? 30 : undefined) : [];
+                                let current = item.stock;
+                                const dataPoints = [ { date: 'Now', stock: current } ];
+                                for (let hist of filtered) {
+                                  const change = parseInt(hist.change || '0', 10);
+                                  current = current - change;
+                                  dataPoints.unshift({ date: hist.date, stock: current });
+                                }
+                                return (
+                                  <div className="flex-1 min-h-[200px] flex flex-col">
+                                    <h4 className="font-semibold text-gray-900 mb-3">Historical Stock Level</h4>
+                                    <div className="flex-1 w-full bg-white border border-gray-200 rounded-lg p-4">
+                                      <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={dataPoints} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                                          <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} minTickGap={20} />
+                                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
+                                          <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                          <Line type="stepAfter" dataKey="stock" name="Stock" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 5 }} />
+                                        </LineChart>
+                                      </ResponsiveContainer>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                             
                           </div>
