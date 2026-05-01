@@ -6,12 +6,12 @@ type AIContextType = {
 };
 
 const AIContext = createContext<AIContextType>({
-  isAIEnabled: true,
+  isAIEnabled: false,
   setIsAIEnabled: () => {},
 });
 
 export const AIProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAIEnabled, setIsAIEnabled] = useState(true);
+  const [isAIEnabled, setIsAIEnabled] = useState(false);
   return (
     <AIContext.Provider value={{ isAIEnabled, setIsAIEnabled }}>
       {children}

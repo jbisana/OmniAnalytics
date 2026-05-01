@@ -44,23 +44,22 @@ export function CRMPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
             <Users className="w-6 h-6 text-blue-600" />
-            CRM & Access Management
+            Partners
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Manage team access and customer relations integrations.</p>
+          <p className="text-sm text-gray-500 mt-1">View and manage partner data and interactions.</p>
         </div>
-        <Button><Users className="w-4 h-4 mr-2" /> Invite User</Button>
       </div>
 
       <Card>
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <CardTitle>Customer Directory</CardTitle>
-            <CardDescription>View and manage customer data and interactions.</CardDescription>
+            <CardTitle>Partner Directory</CardTitle>
+            <CardDescription>View and manage partner data and interactions.</CardDescription>
           </div>
           <div className="relative">
             <input 
               type="text" 
-              placeholder="Search customers..." 
+              placeholder="Search partners..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-3 pr-10 py-2 border rounded-md text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -72,7 +71,7 @@ export function CRMPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 bg-gray-50/50 uppercase border-y border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Customer Name</th>
+                  <th className="px-6 py-4 font-medium">Partner Name</th>
                   <th className="px-6 py-4 font-medium">Email</th>
                   <th className="px-6 py-4 font-medium">Last Interaction</th>
                   <th className="px-6 py-4 font-medium">Value Segment</th>
@@ -83,13 +82,13 @@ export function CRMPage() {
                   <tr>
                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
-                      Loading customers...
+                      Loading partners...
                     </td>
                   </tr>
                 ) : filteredCustomers.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                      No customers found.
+                      No partners found.
                     </td>
                   </tr>
                 ) : filteredCustomers.map((customer) => (

@@ -2,14 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { generateCustomerSegments } from '@/services/ai';
-import { PieChart, Loader2, Users, Target, Lightbulb, AlertTriangle } from 'lucide-react';
+import { generatePartnerSegments } from '@/services/ai';
+import { PieChart, Loader2, Users, Target, Lightbulb, AlertTriangle, SlidersHorizontal } from 'lucide-react';
 import { useAI } from '@/contexts/AIContext';
 
-export function CustomerSegmentsPage() {
+export function PartnerSegmentsPage() {
   const [segments, setSegments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { isAIEnabled } = useAI();
+  
+  const [rfmParams, setRfmParams] = useState({
+    recency: "Active in last 30 days",
+    frequency: "> 5 orders/month",
+    monetary: "> $10,000 ARR"
+  });
 
   const fetchSegments = async () => {
     if (!isAIEnabled) return;
@@ -17,7 +23,7 @@ export function CustomerSegmentsPage() {
     try {
       const res = await fetch('/api/crm/activity');
       const crmActivity = await res.json();
-      const result = await generateCustomerSegments(crmActivity);
+      const result = await generatePartnerSegments(crmActivity, rfmParams);
       setSegments(result);
     } catch (error) {
       console.error(error);
@@ -36,9 +42,9 @@ export function CustomerSegmentsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
             <PieChart className="w-6 h-6 text-blue-600" />
-            Predictive Customer Segmentation
+            Predictive Partner Segmentation
           </h1>
-          <p className="text-sm text-gray-500 mt-1">AI-driven analysis of customer behavior to predict Lifetime Value (CLV).</p>
+          <p className="text-sm text-gray-500 mt-1">AI-driven analysis of partner behavior to predict Lifetime Value (CLV).</p>
         </div>
         <Button onClick={fetchSegments} disabled={isLoading || !isAIEnabled}>
           {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Users className="w-4 h-4 mr-2" />}
@@ -46,12 +52,56 @@ export function CustomerSegmentsPage() {
         </Button>
       </div>
 
+      <Card>
+        <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center gap-2">
+          <SlidersHorizontal className="w-5 h-5 text-gray-400" />
+          <div>
+            <CardTitle className="text-lg">Segmentation Parameters (RFM)</CardTitle>
+            <CardDescription>Manually input criteria to influence AI segment grouping.</CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 bg-gray-50/30">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Recency Target</label>
+              <input 
+                type="text" 
+                className="w-full pl-3 pr-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                value={rfmParams.recency} 
+                onChange={e => setRfmParams({...rfmParams, recency: e.target.value})}
+                placeholder="e.g. Last 30 days" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Frequency Target</label>
+              <input 
+                type="text" 
+                className="w-full pl-3 pr-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                value={rfmParams.frequency} 
+                onChange={e => setRfmParams({...rfmParams, frequency: e.target.value})}
+                placeholder="e.g. Weekly active" 
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Monetary Value Target</label>
+              <input 
+                type="text" 
+                className="w-full pl-3 pr-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                value={rfmParams.monetary} 
+                onChange={e => setRfmParams({...rfmParams, monetary: e.target.value})}
+                placeholder="e.g. > $5,000 / month" 
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {!isAIEnabled ? (
         <Card>
           <CardContent className="h-64 flex flex-col items-center justify-center text-gray-500">
             <AlertTriangle className="w-12 h-12 mb-4 text-gray-300" />
             <p className="text-lg font-medium text-gray-900">AI is Disabled</p>
-            <p className="text-sm">Please enable AI in the global toggle to generate customer segments.</p>
+            <p className="text-sm">Please enable AI in the global toggle to generate partner segments.</p>
           </CardContent>
         </Card>
       ) : isLoading ? (
@@ -94,11 +144,11 @@ export function CustomerSegmentsPage() {
             </Card>
           ))}
           {segments.length === 0 && (
-            <Card>
+            <CardHeader>
               <CardContent className="h-64 flex flex-col items-center justify-center text-gray-500">
-                <p className="text-sm">Failed to generate customer segments. Verification of Gemini configuration may be required.</p>
+                <p className="text-sm">Failed to generate partner segments. Verification of Gemini configuration may be required.</p>
               </CardContent>
-            </Card>
+            </CardHeader>
           )}
         </div>
       )}

@@ -3,10 +3,13 @@ import { DashboardPage } from './pages/DashboardPage';
 import { SalesTrendsPage } from './pages/SalesTrendsPage';
 import { AIInsightsPage } from './pages/AIInsightsPage';
 import { InventoryPage } from './pages/InventoryPage';
+import { ProcurementPage } from './pages/ProcurementPage';
 import { AuditPage } from './pages/AuditPage';
 import { CRMPage } from './pages/CRMPage';
+import { ContractsPage } from './pages/ContractsPage';
+import { PipelinePage } from './pages/PipelinePage';
 import { AnomalyDetectionPage } from './pages/AnomalyDetectionPage';
-import { CustomerSegmentsPage } from './pages/CustomerSegmentsPage';
+import { PartnerSegmentsPage } from './pages/PartnerSegmentsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AdministrationPage } from './pages/AdministrationPage';
 import { AIProvider } from './contexts/AIContext';
@@ -26,13 +29,19 @@ export default function App() {
             case 'anomalies':
               return <AnomalyDetectionPage />;
             case 'segments':
-              return <CustomerSegmentsPage />;
+              return <PartnerSegmentsPage />;
             case 'inventory':
               return <InventoryPage />;
+            case 'procurement':
+              return <ProcurementPage />;
             case 'audit':
               return <AuditPage />;
             case 'crm':
               return <CRMPage />;
+            case 'contracts':
+              return <ContractsPage />;
+            case 'pipeline':
+              return <PipelinePage />;
             case 'administration':
               return <AdministrationPage />;
             case 'settings':

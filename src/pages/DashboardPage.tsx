@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { kpiData, salesData, inventoryData } from '@/data/mockData';
-import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Percent, Tag, Activity, LayoutDashboard, Plus, X, GripHorizontal } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Percent, Tag, Activity, LayoutDashboard, Plus, X, GripHorizontal, Download, FileText, FileSpreadsheet, Briefcase } from 'lucide-react';
 import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -20,10 +20,10 @@ const AVAILABLE_WIDGETS = [
   { id: 'kpi-aov', title: 'Avg. Order Value', type: 'kpi' },
   { id: 'sales-chart', title: 'Sales & Predictive Trends', type: 'chart' },
   { id: 'forecast-chart', title: 'AI Sales Forecast', type: 'chart' },
-  { id: 'recent-activity', title: 'Recent CRM Activity', type: 'list' },
+  { id: 'recent-activity', title: 'Recent Partner Activity', type: 'list' },
   { id: 'inventory', title: 'Live Inventory Monitor', type: 'table' },
   { id: 'top-products', title: 'Top Products', type: 'list' },
-  { id: 'cac-chart', title: 'Customer Acquisition Cost', type: 'chart' },
+  { id: 'cac-chart', title: 'Partner Acquisition Cost', type: 'chart' },
 ];
 
 const DEFAULT_LAYOUTS = {
@@ -46,9 +46,21 @@ export function DashboardPage() {
   const [expandedInventoryItem, setExpandedInventoryItem] = useState<string | null>(null);
   
   const [isEditing, setIsEditing] = useState(false);
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [layouts, setLayouts] = useState<any>(
     JSON.parse(localStorage.getItem('dashboard-layout-v2') || JSON.stringify(DEFAULT_LAYOUTS))
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDownloadOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const activeWidgetIds = useMemo(() => layouts.lg.map((l: any) => l.i), [layouts]);
 
@@ -131,11 +143,11 @@ export function DashboardPage() {
       case 'kpi-revenue':
         return <KPICard title="Total Revenue" value={kpiData.revenue.value} change={kpiData.revenue.change} trend={kpiData.revenue.trend} icon={DollarSign} />;
       case 'kpi-orders':
-        return <KPICard title="Total Orders" value={kpiData.orders.value} change={kpiData.orders.change} trend={kpiData.orders.trend} icon={ShoppingCart} />;
+        return <KPICard title="Active Deals" value={kpiData.activeDeals.value} change={kpiData.activeDeals.change} trend={kpiData.activeDeals.trend} icon={Briefcase} />;
       case 'kpi-conversion':
-        return <KPICard title="Conversion Rate" value={kpiData.conversionRate.value} change={kpiData.conversionRate.change} trend={kpiData.conversionRate.trend} icon={Percent} />;
+        return <KPICard title="Win Rate" value={kpiData.winRate.value} change={kpiData.winRate.change} trend={kpiData.winRate.trend} icon={Percent} />;
       case 'kpi-aov':
-        return <KPICard title="Avg. Order Value" value={kpiData.avgOrderValue.value} change={kpiData.avgOrderValue.change} trend={kpiData.avgOrderValue.trend} icon={Tag} />;
+        return <KPICard title="Avg. Contract Value" value={kpiData.avgContractValue.value} change={kpiData.avgContractValue.change} trend={kpiData.avgContractValue.trend} icon={Tag} />;
       case 'sales-chart':
         return (
           <Card className="flex flex-col h-full w-full">
@@ -147,8 +159,8 @@ export function DashboardPage() {
                  <button onClick={(e) => { e.stopPropagation(); setTimeView('monthly') }} className={cn('px-2 py-1 text-xs font-medium rounded-md transition-colors', timeView === 'monthly' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900')}>M</button>
               </div>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 relative">
-              <ResponsiveContainer width="100%" height="100%">
+            <CardContent className="flex-1 min-h-[200px] relative">
+              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
                 <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -176,8 +188,8 @@ export function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2 shrink-0">
               <CardTitle className="text-base">AI Sales Forecast</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 relative">
-              <ResponsiveContainer width="100%" height="100%">
+            <CardContent className="flex-1 min-h-[200px] relative">
+              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
                 <BarChart data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                   <XAxis dataKey={timeView === 'daily' ? 'displayDate' : 'date'} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} />
@@ -201,7 +213,7 @@ export function DashboardPage() {
         return (
           <Card className="flex flex-col h-full w-full overflow-hidden">
             <CardHeader className="pb-2 shrink-0">
-              <CardTitle className="text-base">Recent CRM Activity</CardTitle>
+              <CardTitle className="text-base">Recent Partner Activity</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
               <div className="space-y-4">
@@ -266,13 +278,13 @@ export function DashboardPage() {
                                   ))}
                                 </div>
                               </div>
-                              {item.reviews && item.reviews.length > 0 && (
+                              {item.partnerFeedback && item.partnerFeedback.length > 0 && (
                                 <div>
-                                  <h4 className="font-semibold text-gray-900 mb-2">Reviews</h4>
+                                  <h4 className="font-semibold text-gray-900 mb-2">Partner Feedback</h4>
                                   <div className="text-xs space-y-2">
                                     <div className="bg-white p-2 rounded border border-gray-200">
-                                      <div className="font-medium text-gray-900">{item.reviews[0].user} <span className="text-yellow-500 ml-1">★ {item.reviews[0].rating}</span></div>
-                                      <p className="text-gray-600 mt-1">{item.reviews[0].comment}</p>
+                                      <div className="font-medium text-gray-900">{item.partnerFeedback[0].partner} <span className="text-yellow-500 ml-1">★ {item.partnerFeedback[0].rating}</span></div>
+                                      <p className="text-gray-600 mt-1">{item.partnerFeedback[0].comment}</p>
                                     </div>
                                   </div>
                                 </div>
@@ -310,23 +322,23 @@ export function DashboardPage() {
           </Card>
         );
       case 'cac-chart':
-        const mockCAC = [
-          { month: 'Jan', cac: 45 }, { month: 'Feb', cac: 52 }, { month: 'Mar', cac: 48 }, 
-          { month: 'Apr', cac: 61 }, { month: 'May', cac: 55 }, { month: 'Jun', cac: 50 },
+        const mockPAC = [
+          { month: 'Jan', pac: 45 }, { month: 'Feb', pac: 52 }, { month: 'Mar', pac: 48 }, 
+          { month: 'Apr', pac: 61 }, { month: 'May', pac: 55 }, { month: 'Jun', pac: 50 },
         ];
         return (
           <Card className="flex flex-col h-full w-full">
             <CardHeader className="pb-2 shrink-0">
-              <CardTitle className="text-base">CAC Trend</CardTitle>
+              <CardTitle className="text-base">PAC Trend</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={mockCAC} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CardContent className="flex-1 min-h-[200px]">
+              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
+                <BarChart data={mockPAC} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
                   <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                  <Bar dataKey="cac" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="pac" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -345,6 +357,31 @@ export function DashboardPage() {
           <p className="text-sm text-gray-500 mt-1">Check your key metrics and adjust layout.</p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="relative" ref={dropdownRef}>
+            <Button variant="outline" onClick={() => setIsDownloadOpen(!isDownloadOpen)}>
+              <Download className="w-4 h-4 mr-2" />
+              Download Report
+            </Button>
+            {isDownloadOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                <div className="py-1">
+                  <button 
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => { setIsDownloadOpen(false); alert('Downloading PDF...'); }}
+                  >
+                    <FileText className="w-4 h-4" /> As PDF Document
+                  </button>
+                  <button 
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    onClick={() => { setIsDownloadOpen(false); alert('Downloading CSV...'); }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4" /> As CSV Data
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {isEditing ? (
             <>
               <Button variant="outline" onClick={() => {

@@ -49,7 +49,7 @@ export function InventoryPage() {
     let oldInventoryMap = new Map<string, number>();
 
     // Also fetch alert settings
-    let alertSettings = { criticalStock: true, lowStock: true, newCustomer: false, anomalies: true };
+    let alertSettings = { criticalStock: true, lowStock: true, newPartner: false, anomalies: true };
     fetch('/api/settings/alerts')
       .then(res => res.json())
       .then(data => { alertSettings = data; })
@@ -150,7 +150,7 @@ export function InventoryPage() {
               <tr>
                 <th className="px-6 py-4 font-medium w-16">Image</th>
                 <th className="px-6 py-4 font-medium">Product Info</th>
-                <th className="px-6 py-4 font-medium">Reviews</th>
+                <th className="px-6 py-4 font-medium">Partner Feedback</th>
                 <th className="px-6 py-4 font-medium">Available Stock</th>
                 <th className="px-6 py-4 font-medium">Alert Thresholds (Low / Critical)</th>
                 <th className="px-6 py-4 font-medium text-right">Details</th>
@@ -184,7 +184,7 @@ export function InventoryPage() {
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         {item.rating}
                       </div>
-                      <div className="text-xs text-gray-500 mt-0.5">{item.reviews?.length || 0} reviews</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{item.partnerFeedback?.length || 0} feedback notes</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -258,12 +258,12 @@ export function InventoryPage() {
                               </div>
                               <div className="flex-1 space-y-4">
                                 <div>
-                                  <h4 className="font-semibold text-gray-900 mb-2">Recent Customer Reviews</h4>
+                                  <h4 className="font-semibold text-gray-900 mb-2">Partner Feedback</h4>
                                   <div className="space-y-3">
-                                    {item.reviews && item.reviews.length > 0 ? item.reviews.map((rev: any, idx: number) => (
+                                    {item.partnerFeedback && item.partnerFeedback.length > 0 ? item.partnerFeedback.map((rev: any, idx: number) => (
                                       <div key={idx} className="bg-white p-3 rounded border border-gray-100 shadow-sm">
                                         <div className="flex items-center justify-between mb-1">
-                                          <span className="font-medium text-gray-900 text-xs">{rev.user}</span>
+                                          <span className="font-medium text-gray-900 text-xs">{rev.partner}</span>
                                           <div className="flex items-center gap-2">
                                             <div className="flex items-center text-yellow-400">
                                               <Star className="w-3 h-3 fill-current" />
@@ -275,7 +275,7 @@ export function InventoryPage() {
                                         <p className="text-gray-600 text-sm leading-relaxed">{rev.comment}</p>
                                       </div>
                                     )) : (
-                                      <p className="text-sm text-gray-500 italic">No reviews yet.</p>
+                                      <p className="text-sm text-gray-500 italic">No feedback yet.</p>
                                     )}
                                   </div>
                                 </div>
@@ -337,8 +337,8 @@ export function InventoryPage() {
                                 return (
                                   <div className="flex-1 min-h-[200px] flex flex-col">
                                     <h4 className="font-semibold text-gray-900 mb-3">Historical Stock Level</h4>
-                                    <div className="flex-1 w-full bg-white border border-gray-200 rounded-lg p-4">
-                                      <ResponsiveContainer width="100%" height="100%">
+                                    <div className="flex-1 w-full min-h-[200px] bg-white border border-gray-200 rounded-lg p-4">
+                                      <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
                                         <LineChart data={dataPoints} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                                           <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} minTickGap={20} />

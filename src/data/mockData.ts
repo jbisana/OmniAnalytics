@@ -3,10 +3,10 @@ import { format, subDays } from 'date-fns';
 const today = new Date();
 
 export const kpiData = {
-  revenue: { value: '$124,563.00', change: '+14.5%', trend: 'up' },
-  orders: { value: '1,429', change: '+8.2%', trend: 'up' },
-  conversionRate: { value: '3.24%', change: '-1.1%', trend: 'down' },
-  avgOrderValue: { value: '$87.16', change: '+5.4%', trend: 'up' },
+  revenue: { value: '$1.4M', change: '+14.5%', trend: 'up' },
+  activeDeals: { value: '42', change: '+8.2%', trend: 'up' },
+  winRate: { value: '68%', change: '-1.1%', trend: 'down' },
+  avgContractValue: { value: '$85k', change: '+5.4%', trend: 'up' },
 };
 
 export const salesData = Array.from({ length: 90 }).map((_, i) => ({
@@ -21,9 +21,9 @@ export const inventoryData = [
     id: 'PROD-001', name: 'Wireless Noise-Canceling Headphones', category: 'Electronics', stock: 45, status: 'In Stock', price: 299.99,
     image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80',
     rating: 4.8,
-    reviews: [
-      { user: 'Alice W.', comment: 'Incredible sound quality and noise cancellation.', rating: 5, date: 'Oct 12' },
-      { user: 'Jonathon', comment: 'Comfortable for long hours.', rating: 4.5, date: 'Oct 08' }
+    partnerFeedback: [
+      { partner: 'TechStart Inc', comment: 'Defect rate consistently below 1%. High quality components.', rating: 5, date: 'Oct 12' },
+      { partner: 'Quantum Dynamics', comment: 'Consistent lead times, but occasional packaging damage.', rating: 4.5, date: 'Oct 08' }
     ],
     history: [
       { date: 'Oct 20', change: '+50', reason: 'Restock PO-1029' },
@@ -34,8 +34,8 @@ export const inventoryData = [
     id: 'PROD-002', name: 'Ergonomic Office Chair', category: 'Furniture', stock: 12, status: 'Low Stock', price: 199.50,
     image: 'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=200&q=80',
     rating: 4.2,
-    reviews: [
-      { user: 'Sandra M.', comment: 'Good back support, assembly was tricky.', rating: 4, date: 'Oct 15' }
+    partnerFeedback: [
+      { partner: 'Acme Corp', comment: 'Sturdy build. Took some time to integrate into our workspace.', rating: 4, date: 'Oct 15' }
     ],
     history: [
      { date: 'Oct 10', change: '+20', reason: 'Restock PO-1020' },
@@ -46,8 +46,8 @@ export const inventoryData = [
     id: 'PROD-003', name: 'Mechanical Keyboard (Cherry MX)', category: 'Electronics', stock: 0, status: 'Out of Stock', price: 129.99,
     image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=200&q=80',
     rating: 4.9,
-    reviews: [
-      { user: 'Gamer99', comment: 'Best tactile feel ever.', rating: 5, date: 'Oct 01' }
+    partnerFeedback: [
+      { partner: 'Global Retailers', comment: 'Excellent tactile feedback for our data entry teams.', rating: 5, date: 'Oct 01' }
     ],
     history: [
       { date: 'Sep 28', change: '+10', reason: 'Restock PO-0990' },
@@ -58,9 +58,9 @@ export const inventoryData = [
     id: 'PROD-004', name: 'Ceramic Pour-Over Coffee Maker', category: 'Kitchen', stock: 156, status: 'In Stock', price: 45.00,
     image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=200&q=80',
     rating: 4.5,
-    reviews: [
-      { user: 'BaristaJoe', comment: 'Brews a clean cup. Love the aesthetic.', rating: 5, date: 'Oct 21' },
-      { user: 'Emma', comment: 'Slightly heavy but retains heat well.', rating: 4, date: 'Oct 19' }
+    partnerFeedback: [
+      { partner: 'Fusion Logistics', comment: 'Durable construction, great for our breakrooms.', rating: 5, date: 'Oct 21' },
+      { partner: 'Acme Corp', comment: 'Aesthetic is great, but pricing for bulk needs review.', rating: 4, date: 'Oct 19' }
     ],
     history: [
       { date: 'Oct 01', change: '+200', reason: 'Initial Stock' },
@@ -71,8 +71,8 @@ export const inventoryData = [
     id: 'PROD-005', name: 'Smart Home Hub - 2nd Gen', category: 'Electronics', stock: 8, status: 'Low Stock', price: 89.99,
     image: 'https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=200&q=80',
     rating: 3.8,
-    reviews: [
-      { user: 'TechEnthusiast', comment: 'Software needs an update, hardware is solid.', rating: 3, date: 'Oct 22' }
+    partnerFeedback: [
+      { partner: 'Quantum Dynamics', comment: 'API integration required 2 patches. Hardware stability is good.', rating: 3, date: 'Oct 22' }
     ],
     history: [
       { date: 'Oct 10', change: '+15', reason: 'Restock PO-1022' },

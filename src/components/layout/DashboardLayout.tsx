@@ -18,7 +18,11 @@ import {
   Sparkles,
   ToggleLeft,
   ToggleRight,
-  Shield
+  Shield,
+  Briefcase,
+  Truck,
+  FileSignature,
+  Cloud
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -32,13 +36,16 @@ const navItems = [
   { group: 'Main', items: [
     { name: 'Dashboard', path: 'dashboard', icon: LayoutDashboard },
     { name: 'Sales & Trends', path: 'sales', icon: BarChart3 },
-    { name: 'CRM & Customers', path: 'crm', icon: Users },
-    { name: 'Inventory', path: 'inventory', icon: ShoppingBag },
+    { name: 'Deals & Pipeline', path: 'pipeline', icon: Briefcase },
+    { name: 'Partners', path: 'crm', icon: Users },
+    { name: 'Contracts & SLA', path: 'contracts', icon: FileSignature },
+    { name: 'Inventory & Supply Chain', path: 'inventory', icon: ShoppingBag },
+    { name: 'Procurement', path: 'procurement', icon: Truck },
   ]},
   { group: 'AI Features', items: [
     { name: 'AI Insights', path: 'insights', icon: Sparkles },
     { name: 'Anomaly Detection', path: 'anomalies', icon: AlertTriangle },
-    { name: 'Customer Segments', path: 'segments', icon: PieChart },
+    { name: 'Partner Segments', path: 'segments', icon: PieChart },
   ]},
   { group: 'Preferences', items: [
     { name: 'Administration', path: 'administration', icon: Shield },
@@ -63,11 +70,14 @@ export function DashboardLayout({ children }: { children: (activePath: string) =
       >
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 shrink-0">
           {isOpen && (
-            <div className="flex items-center gap-2 overflow-hidden">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
-                <BarChart3 className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2 overflow-hidden py-2">
+              <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-sm">
+                <Cloud className="w-6 h-6 text-white" />
               </div>
-              <span className="font-bold text-lg tracking-tight truncate">OmniAnalytics</span>
+              <div className="flex flex-col leading-tight">
+                <span className="font-bold text-base tracking-tight text-gray-900">Omni B2B</span>
+                <span className="text-[10px] text-gray-500 uppercase font-medium tracking-wider">Solutions</span>
+              </div>
             </div>
           )}
           <button 

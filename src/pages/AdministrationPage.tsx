@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Mail, Settings2, Shield, Bell, Key, Sparkles, AlertCircle } from 'lucide-react';
+import { Users, Mail, Settings2, Shield, Bell, Key, Sparkles, AlertCircle, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAI } from '@/contexts/AIContext';
 
 const initialUsers = [
-  { id: '1', name: 'Sarah Jenkins', email: 'sarah@example.com', role: 'System Admin', lastActive: '2 mins ago', status: 'Active', alerts: { criticalStock: true, lowStock: true, newCustomer: true, anomalies: true } },
-  { id: '2', name: 'Michael Chen', email: 'michael@example.com', role: 'Sales Manager', lastActive: '1 hr ago', status: 'Active', alerts: { criticalStock: false, lowStock: false, newCustomer: true, anomalies: false } },
-  { id: '3', name: 'Elena Rodriguez', email: 'elena@example.com', role: 'Support Agent', lastActive: '3 hrs ago', status: 'Away', alerts: { criticalStock: false, lowStock: false, newCustomer: false, anomalies: true } },
-  { id: '4', name: 'James Wilson', email: 'james@example.com', role: 'Read-only API', lastActive: '5 days ago', status: 'Revoked', alerts: { criticalStock: false, lowStock: false, newCustomer: false, anomalies: false } },
+  { id: '1', name: 'Sarah Jenkins', email: 'sarah@example.com', role: 'System Admin', lastActive: '2 mins ago', status: 'Active', alerts: { criticalStock: true, lowStock: true, newPartner: true, anomalies: true } },
+  { id: '2', name: 'Michael Chen', email: 'michael@example.com', role: 'Sales Manager', lastActive: '1 hr ago', status: 'Active', alerts: { criticalStock: false, lowStock: false, newPartner: true, anomalies: false } },
+  { id: '3', name: 'Elena Rodriguez', email: 'elena@example.com', role: 'Support Agent', lastActive: '3 hrs ago', status: 'Away', alerts: { criticalStock: false, lowStock: false, newPartner: false, anomalies: true } },
+  { id: '4', name: 'James Wilson', email: 'james@example.com', role: 'Read-only API', lastActive: '5 days ago', status: 'Revoked', alerts: { criticalStock: false, lowStock: false, newPartner: false, anomalies: false } },
 ];
 
 const availableRoles = ['System Admin', 'Sales Manager', 'Support Agent', 'Read-only API'];
@@ -24,6 +24,8 @@ const initialRolePermissions = {
 export function AdministrationPage() {
   const [users, setUsers] = useState(initialUsers);
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [newUserData, setNewUserData] = useState({ name: '', email: '', role: 'Support Agent' });
   
   // Simulator for current user role
   const [currentUserRole, setCurrentUserRole] = useState('System Admin');
@@ -39,6 +41,25 @@ export function AdministrationPage() {
   const handleRoleChange = (id: string, newRole: string) => {
     if (!isSystemAdmin) return;
     setUsers(users.map(u => (u.id === id ? { ...u, role: newRole } : u)));
+  };
+
+  const handleInviteUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isSystemAdmin) return;
+    
+    const newUser = {
+      id: (users.length + 1).toString(),
+      name: newUserData.name,
+      email: newUserData.email,
+      role: newUserData.role,
+      lastActive: 'Never',
+      status: 'Active',
+      alerts: { criticalStock: false, lowStock: false, newPartner: false, anomalies: false }
+    };
+    
+    setUsers([...users, newUser]);
+    setIsInviteModalOpen(false);
+    setNewUserData({ name: '', email: '', role: 'Support Agent' });
   };
 
   const handleAlertToggle = (userId: string, alertKey: string) => {
@@ -87,7 +108,7 @@ export function AdministrationPage() {
           </h1>
           <p className="text-sm text-gray-500 mt-1">Manage team roles, access controls, and system preferences.</p>
         </div>
-        <Button disabled={!isSystemAdmin}>
+        <Button disabled={!isSystemAdmin} onClick={() => setIsInviteModalOpen(true)}>
           <Users className="w-4 h-4 mr-2" /> Invite User
         </Button>
       </div>
@@ -199,13 +220,13 @@ export function AdministrationPage() {
                                     <input 
                                       type="checkbox" 
                                       className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 disabled:opacity-50" 
-                                      checked={user.alerts.newCustomer}
+                                      checked={user.alerts.newPartner}
                                       disabled={!isSystemAdmin}
-                                      onChange={() => handleAlertToggle(user.id, 'newCustomer')}
+                                      onChange={() => handleAlertToggle(user.id, 'newPartner')}
                                     />
                                   </div>
                                   <div>
-                                    <div className="font-medium text-sm text-gray-900">New Customer Signups</div>
+                                    <div className="font-medium text-sm text-gray-900">New Partner Signups</div>
                                     <div className="text-xs text-gray-500">Notifications for new enterprise or major signups.</div>
                                   </div>
                                 </label>
@@ -350,6 +371,69 @@ export function AdministrationPage() {
           </Card>
         </div>
       </div>
+
+      {/* Invite User Modal Overlay */}
+      {isInviteModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-xl">Invite Team Member</CardTitle>
+                <CardDescription>Enter details to send a system invite.</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setIsInviteModalOpen(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </CardHeader>
+            <form onSubmit={handleInviteUser}>
+              <CardContent className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900">Full Name</label>
+                  <input 
+                    required
+                    type="text" 
+                    placeholder="e.g. John Smith"
+                    value={newUserData.name}
+                    onChange={e => setNewUserData({...newUserData, name: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900">Email Address</label>
+                  <input 
+                    required
+                    type="email" 
+                    placeholder="john@example.com"
+                    value={newUserData.email}
+                    onChange={e => setNewUserData({...newUserData, email: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-900">Initial Role</label>
+                  <select 
+                    value={newUserData.role}
+                    onChange={e => setNewUserData({...newUserData, role: e.target.value})}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {availableRoles.map(role => (
+                      <option key={role} value={role}>{role}</option>
+                    ))}
+                  </select>
+                </div>
+              </CardContent>
+              <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-100 pb-4">
+                <Button variant="outline" type="button" onClick={() => setIsInviteModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Send Invitation
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

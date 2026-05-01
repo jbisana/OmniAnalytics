@@ -7,7 +7,7 @@ export async function generateMarketingInsights(salesData: any[], kpiData: any) 
   try {
     const prompt = `
       You are an expert E-commerce Data Analyst. Analyze the following KPI and Sales Data.
-      Provide 3 actionable insights to optimize marketing campaigns and customer engagement.
+      Provide 3 actionable insights to optimize marketing campaigns and partner engagement.
       Keep them concise and focus on ROI.
 
       Data:
@@ -16,7 +16,7 @@ export async function generateMarketingInsights(salesData: any[], kpiData: any) 
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -65,7 +65,7 @@ export async function generateProductRecommendations(inventoryData: any[]) {
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -109,7 +109,7 @@ export async function detectAnomalies(kpiData: any) {
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -149,16 +149,65 @@ export async function detectAnomalies(kpiData: any) {
   }
 }
 
-export async function generateCustomerSegments(customerData: any) {
+export async function generateProcurementInsights(procurementData: any) {
   try {
     const prompt = `
-      You are a Predictive Customer Segmentation AI. We have some recent customer activity: ${JSON.stringify(customerData)}.
-      Based on typical e-commerce behavior, predict 3 distinct customer segments and their future lifetime value (CLV).
-      Provide the segment name, description, average predicted CLV, and 2-3 suggested marketing strategies for each segment.
+      You are a Predictive Procurement AI. Analyze this supply chain and partner data: ${JSON.stringify(procurementData)}.
+      Predict when major partners are likely to place bulk orders in the next 3 months, and suggest when we need to purchase raw materials or restock to avoid stockouts.
+      Output a JSON array of 3 distinct, high-impact suggestions.
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            insights: {
+              type: Type.ARRAY,
+              description: "List of actionable procurement insights",
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  urgency: { type: Type.STRING, description: "Low, Medium, or High" },
+                  partner: { type: Type.STRING },
+                  recommendedAction: { type: Type.STRING }
+                },
+                required: ["title", "urgency", "partner", "recommendedAction"]
+              }
+            }
+          },
+          required: ["insights"]
+        }
+      }
+    });
+
+    if (response.text) {
+      const data = JSON.parse(response.text);
+      return data.insights;
+    }
+    return [];
+  } catch (error) {
+    console.error("Procurement Insights Error:", error);
+    return [];
+  }
+}
+
+export async function generatePartnerSegments(partnerData: any, rfmParams?: { recency: string, frequency: string, monetary: string }) {
+  try {
+    const rfmContext = rfmParams ? `\n\nTarget Segmentation Parameters:\n- Recency: ${rfmParams.recency}\n- Frequency: ${rfmParams.frequency}\n- Monetary Value: ${rfmParams.monetary}\nPlease weight these parameters heavily when forming the segment predictions.` : '';
+    
+    const prompt = `
+      You are a Predictive Partner Segmentation AI. We have some recent partner activity: ${JSON.stringify(partnerData)}.
+      Based on typical business behavior, predict 3 distinct partner segments and their future lifetime value (PLV).${rfmContext}
+      Provide the segment name, description, average predicted PLV, and 2-3 suggested growth strategies for each segment.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -193,7 +242,57 @@ export async function generateCustomerSegments(customerData: any) {
     }
     return [];
   } catch (error) {
-    console.error("Customer Segmentation Error:", error);
+    console.error("Partner Segmentation Error:", error);
     return [];
+  }
+}
+
+export async function extractContractTerms(contractText: string) {
+  try {
+    const prompt = `
+      You are a Legal & Compliance AI. Extract the key terms, SLA metrics, start date, end date, and renewal clauses from the following contract text:
+      
+      Contract Text:
+      "${contractText}"
+      
+      Provide your findings in a structured JSON format.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            partnerName: { type: Type.STRING },
+            contractValue: { type: Type.STRING },
+            startDate: { type: Type.STRING },
+            endDate: { type: Type.STRING },
+            renewalTerms: { type: Type.STRING },
+            slaMetrics: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "Service Level Agreement commitments."
+            },
+            keyClauses: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "Other key clauses and obligations."
+            }
+          },
+          required: ["partnerName", "startDate", "endDate", "renewalTerms", "slaMetrics", "keyClauses"]
+        }
+      }
+    });
+
+    if (response.text) {
+      return JSON.parse(response.text);
+    }
+    return null;
+  } catch (error) {
+    console.error("Contract Extraction Error:", error);
+    return null;
   }
 }

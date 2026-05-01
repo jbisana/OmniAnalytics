@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 const DEFAULT_ALERTS = {
   criticalStock: true,
   lowStock: true,
-  newCustomer: false,
+  newPartner: false,
   anomalies: true,
 };
 
@@ -122,10 +122,10 @@ export function SettingsPage() {
                   </div>
                   <div className="flex items-center justify-between p-4 bg-gray-50/50">
                     <div>
-                      <p className="text-sm text-gray-900 font-medium">New Customer Signups</p>
+                      <p className="text-sm text-gray-900 font-medium">New Partner Signups</p>
                       <p className="text-xs text-gray-500 mt-0.5">Get daily summaries of new enterprise signups.</p>
                     </div>
-                    <ToggleSwitch checked={alertSettings.newCustomer} onChange={() => handleToggle('newCustomer')} />
+                    <ToggleSwitch checked={alertSettings.newPartner} onChange={() => handleToggle('newPartner')} />
                   </div>
                 </div>
               </div>

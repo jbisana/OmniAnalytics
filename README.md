@@ -1,15 +1,18 @@
-# OmniAnalytics
+# Omni B2B Business Solutions
 
-An Enterprise E-commerce Analytics Dashboard packed with AI insights, real-time stock monitoring, customer segments, and predictive sales tracking. Powered by Gemini AI.
+A comprehensive B2B Enterprise Dashboard featuring AI-powered contract analysis, deal pipeline tracking, predictive revenue analytics, and partner management. Powered by Gemini AI.
 
 ## Features
 
-- **Dashboard**: High-level KPI tracking and AI predictive sales charts.
-- **AI Insights**: Gemini-driven marketing optimizations and product recommendations.
-- **Anomaly Detection**: Flags statistical deviations in common KPIs.
-- **Customer Segmentation**: Predicts customer lifetime value (CLV) and provides actionable marketing strategies locally or with Gemini AI.
-- **Inventory Management**: Real-time mock stream of stock data highlighting low & critical stock thresholds.
-- **CRM Roles**: Access management UI reflecting different roles and connected integrators.
+- **Dashboard**: Customizable high-level KPI tracking (Revenue, Active Deals, Win Rate, ACV) and AI predictive revenue charts.
+- **Deals & Pipeline**: Track enterprise deals through various stages of the sales cycle.
+- **Contracts & SLA**: Centralized contract management with automated AI extraction of key terms, SLAs, and renewal alerts.
+- **Sales & Trends**: Deep dive into revenue performance, sector analysis, and pipeline velocity.
+- **AI Insights**: Gemini-driven performance insights, automated sales cycle analysis, and projections.
+- **Anomaly Detection**: Flags statistical deviations in common business KPIs.
+- **Partner Segmentation**: Predicts partner lifetime value (PLV) and provides actionable growth strategies locally or with Gemini AI.
+- **Inventory & Supply Chain**: Manage partner feedback and supply chain data.
+- **Partner Relations**: Access management UI reflecting different roles and connected integrators.
 - **Audit Trails**: Security tracking logs of user actions.
 
 ## Getting Started
