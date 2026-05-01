@@ -98,8 +98,33 @@ export const auditLogs = Array.from({ length: 15 }).map((_, i) => ({
 }));
 
 export const crmCustomers = [
-  { id: 'CUST-001', name: 'Acme Corp', email: 'contact@acmecorp.com', lastInteraction: '2 hours ago', segment: 'High Value', role: 'Customer' },
-  { id: 'CUST-002', name: 'Global Tech', email: 'info@globaltech.com', lastInteraction: '1 day ago', segment: 'Medium Value', role: 'System Admin' },
-  { id: 'CUST-003', name: 'Startup Inc', email: 'hello@startupinc.io', lastInteraction: '3 days ago', segment: 'Low Value', role: 'Customer' },
-  { id: 'CUST-004', name: 'Enterprise LLC', email: 'admin@enterprisellc.com', lastInteraction: '5 mins ago', segment: 'High Value', role: 'Customer' },
+  { id: 'CUST-001', name: 'Acme Corp (Global HQ)', email: 'contact@acmecorp.com', lastInteraction: '2 hours ago', segment: 'High Value', role: 'Parent Company', parentId: null, locations: 3 },
+  { id: 'CUST-001-A', name: 'Acme Corp (EMEA)', email: 'emea@acmecorp.com', lastInteraction: '4 hours ago', segment: 'High Value', role: 'Subsidiary', parentId: 'CUST-001', locations: 0 },
+  { id: 'CUST-001-B', name: 'Acme Corp (APAC)', email: 'apac@acmecorp.com', lastInteraction: '1 day ago', segment: 'Medium Value', role: 'Subsidiary', parentId: 'CUST-001', locations: 0 },
+  { id: 'CUST-001-C', name: 'Acme Corp (NA)', email: 'na@acmecorp.com', lastInteraction: '3 hours ago', segment: 'High Value', role: 'Subsidiary', parentId: 'CUST-001', locations: 0 },
+  { id: 'CUST-002', name: 'Global Tech', email: 'info@globaltech.com', lastInteraction: '1 day ago', segment: 'Medium Value', role: 'Parent Company', parentId: null, locations: 1 },
+  { id: 'CUST-003', name: 'Startup Inc', email: 'hello@startupinc.io', lastInteraction: '3 days ago', segment: 'Low Value', role: 'Parent Company', parentId: null, locations: 0 },
+  { id: 'CUST-004', name: 'Enterprise LLC', email: 'admin@enterprisellc.com', lastInteraction: '5 mins ago', segment: 'High Value', role: 'Parent Company', parentId: null, locations: 2 },
+  { id: 'CUST-004-A', name: 'Enterprise LLC (East Coast)', email: 'east@enterprisellc.com', lastInteraction: '2 hours ago', segment: 'Medium Value', role: 'Subsidiary', parentId: 'CUST-004', locations: 0 },
+  { id: 'CUST-004-B', name: 'Enterprise LLC (West Coast)', email: 'west@enterprisellc.com', lastInteraction: '1 day ago', segment: 'High Value', role: 'Subsidiary', parentId: 'CUST-004', locations: 0 },
+];
+
+export const quotesData = [
+  { id: 'QT-2024-001', partner: 'Acme Corp', date: '2024-10-25', amount: 15400.00, status: 'Accepted', validUntil: '2024-11-25' },
+  { id: 'QT-2024-002', partner: 'TechStart Inc', date: '2024-10-26', amount: 8200.50, status: 'Pending', validUntil: '2024-11-26' },
+  { id: 'QT-2024-003', partner: 'Global Retailers', date: '2024-10-28', amount: 45000.00, status: 'Draft', validUntil: '2024-11-28' },
+];
+
+export const invoicesData = [
+  { id: 'INV-2024-001', partner: 'Acme Corp', date: '2024-10-20', dueDate: '2024-11-19', amount: 12500.00, status: 'Paid' },
+  { id: 'INV-2024-002', partner: 'Fusion Logistics', date: '2024-10-24', dueDate: '2024-11-23', amount: 6400.00, status: 'Sent' },
+  { id: 'INV-2024-003', partner: 'Quantum Dynamics', date: '2024-09-15', dueDate: '2024-10-15', amount: 9800.00, status: 'Overdue' },
+  { id: 'INV-2024-004', partner: 'TechStart Inc', date: '2024-10-27', dueDate: '2024-11-26', amount: 3200.00, status: 'Draft' },
+];
+
+export const ticketsData = [
+  { id: 'TKT-1084', partner: 'Acme Corp', type: 'Defect', priority: 'High', status: 'Open', subject: 'Server Node Failure - Batch A', date: '2024-11-01', slaStatus: 'Breached' },
+  { id: 'TKT-1085', partner: 'TechStart Inc', type: 'RMA', priority: 'Medium', status: 'In Progress', subject: 'Return Authorization for 50 Laptops', date: '2024-11-02', slaStatus: 'Warning' },
+  { id: 'TKT-1086', partner: 'Global Retailers', type: 'Support', priority: 'Low', status: 'Resolved', subject: 'Integration API Configuration', date: '2024-10-28', slaStatus: 'Healthy' },
+  { id: 'TKT-1087', partner: 'Quantum Dynamics', type: 'Billing', priority: 'Medium', status: 'Open', subject: 'Disputing Invoice INV-2024-003', date: '2024-11-03', slaStatus: 'Healthy' },
 ];

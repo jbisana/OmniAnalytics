@@ -6,12 +6,19 @@ A comprehensive B2B Enterprise Dashboard featuring AI-powered contract analysis,
 
 - **Dashboard**: Customizable high-level KPI tracking (Revenue, Active Deals, Win Rate, ACV) and AI predictive revenue charts.
 - **Deals & Pipeline**: Track enterprise deals through various stages of the sales cycle.
+- **Quotes (CPQ)**: Advanced Configure, Price, Quote builder for constructing B2B orders with volume and custom discounting.
+- **Invoicing & Billing**: Streamline B2B billing with quote tracking, invoice status, and automated AI assistance for overdues.
+- **Partner Portal Catalog**: Provide a self-service B2B storefront for re-ordering, observing tier-based pricing, and order history tracking.
+- **Partner Deal Registration**: Allows external partners to register opportunities they have uncovered to lock in margins and prevent channel conflict.
+- **Support & Ticketing (Post-Sale)**: Handle post-sale requests, RMA requests, defect tracking, and monitor SLA breaches with AI remediation alerts.
 - **Contracts & SLA**: Centralized contract management with automated AI extraction of key terms, SLAs, and renewal alerts.
 - **Sales & Trends**: Deep dive into revenue performance, sector analysis, and pipeline velocity.
 - **AI Insights**: Gemini-driven performance insights, automated sales cycle analysis, and projections.
 - **Anomaly Detection**: Flags statistical deviations in common business KPIs.
 - **Partner Segmentation**: Predicts partner lifetime value (PLV) and provides actionable growth strategies locally or with Gemini AI.
 - **Inventory & Supply Chain**: Manage partner feedback and supply chain data.
+- **Company Account Hierarchies**: Manage parent accounts (HQs) and their child locations within the Partner Relations CRM view for centralized corporate oversight.
+- **Self-Service Business Onboarding**: A portal simulator where new businesses upload tax-exempt certificates, credit apps, and specify structures without salesperson assistance.
 - **Partner Relations**: Access management UI reflecting different roles and connected integrators.
 - **Audit Trails**: Security tracking logs of user actions.
 

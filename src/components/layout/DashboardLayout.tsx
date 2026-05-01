@@ -22,7 +22,12 @@ import {
   Briefcase,
   Truck,
   FileSignature,
-  Cloud
+  Cloud,
+  Receipt,
+  Calculator,
+  LifeBuoy,
+  Store,
+  Handshake
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -37,10 +42,18 @@ const navItems = [
     { name: 'Dashboard', path: 'dashboard', icon: LayoutDashboard },
     { name: 'Sales & Trends', path: 'sales', icon: BarChart3 },
     { name: 'Deals & Pipeline', path: 'pipeline', icon: Briefcase },
+    { name: 'Quotes (CPQ)', path: 'cpq', icon: Calculator },
+    { name: 'Invoicing & Billing', path: 'invoicing', icon: Receipt },
     { name: 'Partners', path: 'crm', icon: Users },
     { name: 'Contracts & SLA', path: 'contracts', icon: FileSignature },
     { name: 'Inventory & Supply Chain', path: 'inventory', icon: ShoppingBag },
     { name: 'Procurement', path: 'procurement', icon: Truck },
+    { name: 'Support & Tickets', path: 'tickets', icon: LifeBuoy },
+  ]},
+  { group: 'Partner Portal Simulator', items: [
+    { name: 'Business Onboarding', path: 'onboarding', icon: Briefcase },
+    { name: 'Deal Registration', path: 'deal-reg', icon: Handshake },
+    { name: 'B2B Catalog', path: 'portal', icon: Store },
   ]},
   { group: 'AI Features', items: [
     { name: 'AI Insights', path: 'insights', icon: Sparkles },

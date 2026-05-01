@@ -12,7 +12,14 @@ import { AnomalyDetectionPage } from './pages/AnomalyDetectionPage';
 import { PartnerSegmentsPage } from './pages/PartnerSegmentsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AdministrationPage } from './pages/AdministrationPage';
+import { InvoicingPage } from './pages/InvoicingPage';
+import { CPQPage } from './pages/CPQPage';
+import { SupportTicketsPage } from './pages/SupportTicketsPage';
 import { AIProvider } from './contexts/AIContext';
+
+import { PartnerPortalPage } from './pages/PartnerPortalPage';
+import { PartnerOnboardingPage } from './pages/PartnerOnboardingPage';
+import { PartnerDealRegistrationPage } from './pages/PartnerDealRegistrationPage';
 
 export default function App() {
   return (
@@ -42,6 +49,18 @@ export default function App() {
               return <ContractsPage />;
             case 'pipeline':
               return <PipelinePage />;
+            case 'cpq':
+              return <CPQPage />;
+            case 'invoicing':
+              return <InvoicingPage />;
+            case 'tickets':
+              return <SupportTicketsPage />;
+            case 'portal':
+              return <PartnerPortalPage />;
+            case 'deal-reg':
+              return <PartnerDealRegistrationPage />;
+            case 'onboarding':
+              return <PartnerOnboardingPage />;
             case 'administration':
               return <AdministrationPage />;
             case 'settings':

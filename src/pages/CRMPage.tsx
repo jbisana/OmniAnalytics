@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Mail, Settings2, Shield, UserSquare2, Loader2 } from 'lucide-react';
+import { Users, Mail, Settings2, Shield, UserSquare2, Loader2, ChevronDown, ChevronRight, Building2, Store } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const initialUsers = [
   { id: '1', name: 'Sarah Jenkins', email: 'sarah@example.com', role: 'System Admin', lastActive: '2 mins ago', status: 'Active' },
@@ -18,6 +19,7 @@ export function CRMPage() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch('/api/crm/customers')
@@ -33,10 +35,38 @@ export function CRMPage() {
     setUsers(users.map(u => (u.id === id ? { ...u, role: newRole } : u)));
   };
 
-  const filteredCustomers = customers.filter(customer => 
-    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    customer.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const toggleExpand = (id: string) => {
+    const newExpanded = new Set(expandedIds);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedIds(newExpanded);
+  };
+
+  // Group into hierarchy
+  const parents = customers.filter(c => !c.parentId);
+  const childrenMap = new Map<string, any[]>();
+  customers.forEach(c => {
+    if (c.parentId) {
+      if (!childrenMap.has(c.parentId)) childrenMap.set(c.parentId, []);
+      childrenMap.get(c.parentId)!.push(c);
+    }
+  });
+
+  const filteredParents = parents.filter(customer => {
+    const matchesSearch = customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          customer.email.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const children = childrenMap.get(customer.id) || [];
+    const childrenMatchSearch = children.some(child => 
+      child.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      child.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return matchesSearch || childrenMatchSearch;
+  });
 
   return (
     <div className="space-y-6">
@@ -46,20 +76,20 @@ export function CRMPage() {
             <Users className="w-6 h-6 text-blue-600" />
             Partners
           </h1>
-          <p className="text-sm text-gray-500 mt-1">View and manage partner data and interactions.</p>
+          <p className="text-sm text-gray-500 mt-1">View and manage parent accounts and their subsidiaries/locations.</p>
         </div>
       </div>
 
       <Card>
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <CardTitle>Partner Directory</CardTitle>
-            <CardDescription>View and manage partner data and interactions.</CardDescription>
+            <CardTitle>Partner Account Hierarchy</CardTitle>
+            <CardDescription>View relationships between HQs and their subsidiary branches.</CardDescription>
           </div>
           <div className="relative">
             <input 
               type="text" 
-              placeholder="Search partners..." 
+              placeholder="Search companies..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-3 pr-10 py-2 border rounded-md text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -71,45 +101,91 @@ export function CRMPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 bg-gray-50/50 uppercase border-y border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Partner Name</th>
-                  <th className="px-6 py-4 font-medium">Email</th>
+                  <th className="px-6 py-4 font-medium w-8"></th>
+                  <th className="px-6 py-4 font-medium">Company Name</th>
+                  <th className="px-6 py-4 font-medium">Type</th>
+                  <th className="px-6 py-4 font-medium">Billing Contact</th>
                   <th className="px-6 py-4 font-medium">Last Interaction</th>
-                  <th className="px-6 py-4 font-medium">Value Segment</th>
+                  <th className="px-6 py-4 font-medium">Status / Segment</th>
                 </tr>
               </thead>
               <tbody>
                 {isLoadingCustomers ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                       <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
                       Loading partners...
                     </td>
                   </tr>
-                ) : filteredCustomers.length === 0 ? (
+                ) : filteredParents.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                       No partners found.
                     </td>
                   </tr>
-                ) : filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-medium">
-                          {customer.name.charAt(0)}
-                        </div>
-                        <div className="font-medium text-gray-900">{customer.name}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{customer.email}</td>
-                    <td className="px-6 py-4 text-gray-500">{customer.lastInteraction}</td>
-                    <td className="px-6 py-4">
-                      <Badge variant={customer.segment === 'High Value' ? 'success' : customer.segment === 'Medium Value' ? 'warning' : 'outline'}>
-                        {customer.segment}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
+                ) : filteredParents.map((customer) => {
+                  const children = childrenMap.get(customer.id) || [];
+                  const isExpanded = expandedIds.has(customer.id);
+                  const hasChildren = children.length > 0;
+
+                  return (
+                    <React.Fragment key={customer.id}>
+                      <tr className={cn(
+                        "border-b border-gray-100 last:border-0 transition-colors",
+                        isExpanded ? "bg-blue-50/30" : "hover:bg-gray-50/50",
+                        "cursor-pointer"
+                      )} onClick={() => toggleExpand(customer.id)}>
+                        <td className="px-6 py-4">
+                          {hasChildren ? (
+                            isExpanded ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />
+                          ) : null}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium shrink-0">
+                              <Building2 className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-900">{customer.name}</div>
+                              {hasChildren && <div className="text-xs text-gray-500 mt-0.5">{children.length} Subsidiary Locations</div>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">
+                           <Badge variant="outline" className="bg-gray-50">{customer.role}</Badge>
+                        </td>
+                        <td className="px-6 py-4 text-gray-600">{customer.email}</td>
+                        <td className="px-6 py-4 text-gray-500">{customer.lastInteraction}</td>
+                        <td className="px-6 py-4">
+                          <Badge variant={customer.segment === 'High Value' ? 'success' : customer.segment === 'Medium Value' ? 'warning' : 'outline'}>
+                            {customer.segment}
+                          </Badge>
+                        </td>
+                      </tr>
+                      {isExpanded && children.map(child => (
+                        <tr key={child.id} className="border-b border-gray-50 bg-gray-50/30 hover:bg-gray-100/50 transition-colors">
+                          <td className="px-6 py-3 border-l-2 border-l-blue-200"></td>
+                          <td className="px-6 py-3 pl-8">
+                            <div className="flex items-center gap-2">
+                               <Store className="w-3.5 h-3.5 text-gray-400" />
+                               <span className="font-medium text-gray-800 text-sm">{child.name}</span>
+                            </div>
+                          </td>
+                           <td className="px-6 py-3 text-gray-500">
+                             <Badge variant="secondary" className="text-[10px] font-normal">{child.role}</Badge>
+                           </td>
+                          <td className="px-6 py-3 text-gray-500 text-sm">{child.email}</td>
+                          <td className="px-6 py-3 text-gray-500 text-sm">{child.lastInteraction}</td>
+                          <td className="px-6 py-3">
+                            <Badge variant={child.segment === 'High Value' ? 'success' : child.segment === 'Medium Value' ? 'warning' : 'outline'} className="text-[10px]">
+                              {child.segment}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
