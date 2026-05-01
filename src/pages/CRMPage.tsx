@@ -17,6 +17,7 @@ export function CRMPage() {
   const [users, setUsers] = useState(initialUsers);
   const [customers, setCustomers] = useState<any[]>([]);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetch('/api/crm/customers')
@@ -32,6 +33,11 @@ export function CRMPage() {
     setUsers(users.map(u => (u.id === id ? { ...u, role: newRole } : u)));
   };
 
+  const filteredCustomers = customers.filter(customer => 
+    customer.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    customer.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -46,9 +52,20 @@ export function CRMPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Customer Directory</CardTitle>
-          <CardDescription>View and manage customer data and interactions.</CardDescription>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle>Customer Directory</CardTitle>
+            <CardDescription>View and manage customer data and interactions.</CardDescription>
+          </div>
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="Search customers..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-3 pr-10 py-2 border rounded-md text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -69,13 +86,13 @@ export function CRMPage() {
                       Loading customers...
                     </td>
                   </tr>
-                ) : customers.length === 0 ? (
+                ) : filteredCustomers.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                       No customers found.
                     </td>
                   </tr>
-                ) : customers.map((customer) => (
+                ) : filteredCustomers.map((customer) => (
                   <tr key={customer.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">

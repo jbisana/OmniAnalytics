@@ -149,8 +149,11 @@ export function InventoryPage() {
             <tbody>
               {inventory.map((item) => (
                 <React.Fragment key={item.id}>
-                  <tr className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr 
+                    className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors cursor-pointer"
+                    onClick={() => setExpandedRow(expandedRow === item.id ? null : item.id)}
+                  >
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       {item.image ? (
                         <img src={item.image} alt={item.name} className="w-10 h-10 rounded-md object-cover border border-gray-200 bg-gray-50" />
                       ) : (
@@ -192,13 +195,14 @@ export function InventoryPage() {
                         </Badge>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col gap-1.5 text-sm text-gray-500">
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1 text-yellow-600 font-medium w-16"><Bell className="w-3.5 h-3.5" /> Low</span>
                           <input 
                             type="number" 
                             value={item.threshold} 
+                            onClick={(e) => e.stopPropagation()}
                             onChange={(e) => handleThresholdChange(item.id, 'threshold', parseInt(e.target.value) || 0)}
                             className="w-16 h-7 px-1.5 border border-gray-200 rounded text-center text-gray-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-shadow"
                           />
@@ -208,6 +212,7 @@ export function InventoryPage() {
                           <input 
                             type="number" 
                             value={item.criticalThreshold} 
+                            onClick={(e) => e.stopPropagation()}
                             onChange={(e) => handleThresholdChange(item.id, 'criticalThreshold', parseInt(e.target.value) || 0)}
                             className="w-16 h-7 px-1.5 border border-red-200 rounded text-center text-red-900 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm transition-shadow"
                           />

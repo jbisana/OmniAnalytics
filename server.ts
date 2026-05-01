@@ -86,19 +86,28 @@ async function startServer() {
   setInterval(() => {
     let changed = false;
     serverInventory = serverInventory.map(item => {
-      if (item.stock > 0 && Math.random() > 0.7) {
+      const oldStock = item.stock;
+      if (oldStock > 0 && Math.random() > 0.7) {
         changed = true;
         const drop = Math.floor(Math.random() * 3) + 1;
-        const newStock = Math.max(0, item.stock - drop);
+        const newStock = Math.max(0, oldStock - drop);
         
         let newStatus = 'In Stock';
         if (newStock === 0) newStatus = 'Out of Stock';
         else if (newStock <= item.criticalThreshold) newStatus = 'Critical Stock';
         else if (newStock <= item.threshold) newStatus = 'Low Stock';
         
+        // Critical stock alert email notification
+        if (newStock <= item.criticalThreshold && oldStock > item.criticalThreshold) {
+          const admins = serverCrmCustomers.filter(c => c.role === 'System Admin');
+          admins.forEach(admin => {
+            console.log(`[EMAIL NOTIFICATION] To: ${admin.email} | Subject: CRITICAL STOCK ALERT - ${item.name} | Body: Stock has dropped to ${newStock}.`);
+          });
+        }
+        
         const newHistoryItem = { 
           date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 
-          change: `-${item.stock - newStock}`, 
+          change: `-${oldStock - newStock}`, 
           reason: 'Live Sale (API)' 
         };
         const updatedHistory = [newHistoryItem, ...(item.history || [])].slice(0, 5);
