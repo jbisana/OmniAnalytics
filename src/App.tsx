@@ -20,6 +20,7 @@ import { AIProvider } from './contexts/AIContext';
 import { PartnerPortalPage } from './pages/PartnerPortalPage';
 import { PartnerOnboardingPage } from './pages/PartnerOnboardingPage';
 import { PartnerDealRegistrationPage } from './pages/PartnerDealRegistrationPage';
+import { PartnerSupportPortalPage } from './pages/PartnerSupportPortalPage';
 
 export default function App() {
   return (
@@ -61,6 +62,8 @@ export default function App() {
               return <PartnerDealRegistrationPage />;
             case 'onboarding':
               return <PartnerOnboardingPage />;
+            case 'partner-support':
+              return <PartnerSupportPortalPage />;
             case 'administration':
               return <AdministrationPage />;
             case 'settings':

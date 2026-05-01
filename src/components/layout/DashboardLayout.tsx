@@ -27,7 +27,8 @@ import {
   Calculator,
   LifeBuoy,
   Store,
-  Handshake
+  Handshake,
+  Headphones
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -54,6 +55,7 @@ const navItems = [
     { name: 'Business Onboarding', path: 'onboarding', icon: Briefcase },
     { name: 'Deal Registration', path: 'deal-reg', icon: Handshake },
     { name: 'B2B Catalog', path: 'portal', icon: Store },
+    { name: 'Support & RMAs', path: 'partner-support', icon: Headphones },
   ]},
   { group: 'AI Features', items: [
     { name: 'AI Insights', path: 'insights', icon: Sparkles },
