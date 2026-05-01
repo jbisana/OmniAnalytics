@@ -10,6 +10,7 @@ A comprehensive B2B Enterprise Dashboard featuring AI-powered contract analysis,
 - **Invoicing & Billing**: Streamline B2B billing with quote tracking, invoice status, and automated AI assistance for overdues.
 - **Partner Portal Catalog**: Provide a self-service B2B storefront for re-ordering, observing tier-based pricing, and order history tracking.
 - **Partner Deal Registration**: Allows external partners to register opportunities they have uncovered to lock in margins and prevent channel conflict.
+- **Partner Admin Hub (Team & Spend)**: A self-serve interface for HQ accounts to invite branch buyers, configure max monthly spend limits, and manually approve orders.
 - **Partner Support & RMA Portal**: A Helpdesk simulation for partners to submit RMAs, defect reports, and general support tickets, complete with an AI-vision approval mockup.
 - **Support & Ticketing (Post-Sale)**: Handle post-sale requests, RMA requests, defect tracking, and monitor SLA breaches with AI remediation alerts.
 - **Contracts & SLA**: Centralized contract management with automated AI extraction of key terms, SLAs, and renewal alerts.

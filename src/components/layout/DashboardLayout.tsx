@@ -28,7 +28,8 @@ import {
   LifeBuoy,
   Store,
   Handshake,
-  Headphones
+  Headphones,
+  ShieldCheck
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -54,6 +55,7 @@ const navItems = [
   { group: 'Partner Portal Simulator', items: [
     { name: 'Business Onboarding', path: 'onboarding', icon: Briefcase },
     { name: 'Deal Registration', path: 'deal-reg', icon: Handshake },
+    { name: 'Admin Hub (Team)', path: 'partner-admin', icon: ShieldCheck },
     { name: 'B2B Catalog', path: 'portal', icon: Store },
     { name: 'Support & RMAs', path: 'partner-support', icon: Headphones },
   ]},

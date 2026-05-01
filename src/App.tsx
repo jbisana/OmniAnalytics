@@ -21,6 +21,7 @@ import { PartnerPortalPage } from './pages/PartnerPortalPage';
 import { PartnerOnboardingPage } from './pages/PartnerOnboardingPage';
 import { PartnerDealRegistrationPage } from './pages/PartnerDealRegistrationPage';
 import { PartnerSupportPortalPage } from './pages/PartnerSupportPortalPage';
+import { PartnerTeamManagementPage } from './pages/PartnerTeamManagementPage';
 
 export default function App() {
   return (
@@ -62,6 +63,8 @@ export default function App() {
               return <PartnerDealRegistrationPage />;
             case 'onboarding':
               return <PartnerOnboardingPage />;
+            case 'partner-admin':
+              return <PartnerTeamManagementPage />;
             case 'partner-support':
               return <PartnerSupportPortalPage />;
             case 'administration':
