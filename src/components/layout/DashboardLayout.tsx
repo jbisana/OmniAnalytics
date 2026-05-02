@@ -30,7 +30,9 @@ import {
   Handshake,
   Headphones,
   ShieldCheck,
-  Navigation
+  Navigation,
+  DollarSign,
+  Wallet
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -51,11 +53,13 @@ const navItems = [
     { name: 'Contracts & SLA', path: 'contracts', icon: FileSignature },
     { name: 'Inventory & Supply Chain', path: 'inventory', icon: ShoppingBag },
     { name: 'Procurement', path: 'procurement', icon: Truck },
+    { name: 'MDF (Funds)', path: 'mdf', icon: DollarSign },
     { name: 'Support & Tickets', path: 'tickets', icon: LifeBuoy },
   ]},
   { group: 'Partner Portal Simulator', items: [
     { name: 'Business Onboarding', path: 'onboarding', icon: Briefcase },
     { name: 'Deal Registration', path: 'deal-reg', icon: Handshake },
+    { name: 'MDF Requests', path: 'partner-mdf', icon: Wallet },
     { name: 'Admin Hub (Team)', path: 'partner-admin', icon: ShieldCheck },
     { name: 'B2B Catalog', path: 'portal', icon: Store },
     { name: 'Order Tracking', path: 'partner-tracking', icon: Navigation },

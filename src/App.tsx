@@ -23,6 +23,8 @@ import { PartnerDealRegistrationPage } from './pages/PartnerDealRegistrationPage
 import { PartnerSupportPortalPage } from './pages/PartnerSupportPortalPage';
 import { PartnerTeamManagementPage } from './pages/PartnerTeamManagementPage';
 import { PartnerOrderTrackingPage } from './pages/PartnerOrderTrackingPage';
+import { PartnerMDFPage } from './pages/PartnerMDFPage';
+import { MDFPage } from './pages/MDFPage';
 
 export default function App() {
   return (
@@ -44,6 +46,8 @@ export default function App() {
               return <InventoryPage />;
             case 'procurement':
               return <ProcurementPage />;
+            case 'mdf':
+              return <MDFPage />;
             case 'audit':
               return <AuditPage />;
             case 'crm':
@@ -62,6 +66,8 @@ export default function App() {
               return <PartnerPortalPage />;
             case 'deal-reg':
               return <PartnerDealRegistrationPage />;
+            case 'partner-mdf':
+              return <PartnerMDFPage />;
             case 'onboarding':
               return <PartnerOnboardingPage />;
             case 'partner-admin':

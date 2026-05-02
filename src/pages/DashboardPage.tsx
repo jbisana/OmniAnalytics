@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { kpiData, salesData, inventoryData } from '@/data/mockData';
 import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Percent, Tag, Activity, LayoutDashboard, Plus, X, GripHorizontal, Download, FileText, FileSpreadsheet, Briefcase } from 'lucide-react';
-import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts';
+import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { generatePartnerSegments } from '@/services/ai';
 import { useAI } from '@/contexts/AIContext';
 import { Responsive, WidthProvider, Layout } from 'react-grid-layout/legacy';
 import 'react-grid-layout/css/styles.css';
@@ -73,6 +74,7 @@ const AVAILABLE_WIDGETS = [
   { id: 'kpi-aov', title: 'Avg. Order Value', type: 'kpi' },
   { id: 'sales-chart', title: 'Sales & Predictive Trends', type: 'chart' },
   { id: 'forecast-chart', title: 'AI Sales Forecast', type: 'chart' },
+  { id: 'partner-segments', title: 'Partner Segments', type: 'chart' },
   { id: 'recent-activity', title: 'Recent Partner Activity', type: 'list' },
   { id: 'inventory', title: 'Live Inventory Monitor', type: 'table' },
   { id: 'top-products', title: 'Top Products', type: 'list' },
@@ -87,14 +89,16 @@ const DEFAULT_LAYOUTS = {
     { i: 'kpi-aov', x: 9, y: 0, w: 3, h: 2, minW: 2, minH: 2 },
     { i: 'sales-chart', x: 0, y: 2, w: 8, h: 6, minW: 4, minH: 4 },
     { i: 'forecast-chart', x: 8, y: 2, w: 4, h: 6, minW: 3, minH: 4 },
+    { i: 'partner-segments', x: 0, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
     { i: 'recent-activity', x: 8, y: 8, w: 4, h: 6, minW: 3, minH: 4 },
-    { i: 'inventory', x: 0, y: 8, w: 8, h: 6, minW: 6, minH: 4 },
+    { i: 'inventory', x: 0, y: 14, w: 8, h: 6, minW: 6, minH: 4 },
   ]
 };
 
 export function DashboardPage() {
   const [timeView, setTimeView] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [crmActivity, setCrmActivity] = useState<any[]>([]);
+  const [aiSegments, setAiSegments] = useState<any[]>([]);
   const { isAIEnabled } = useAI();
   const [expandedInventoryItem, setExpandedInventoryItem] = useState<string | null>(null);
   
@@ -102,7 +106,7 @@ export function DashboardPage() {
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [layouts, setLayouts] = useState<any>(
-    JSON.parse(localStorage.getItem('dashboard-layout-v2') || JSON.stringify(DEFAULT_LAYOUTS))
+    JSON.parse(localStorage.getItem('dashboard-layout-v3') || JSON.stringify(DEFAULT_LAYOUTS))
   );
 
   useEffect(() => {
@@ -120,9 +124,14 @@ export function DashboardPage() {
   useEffect(() => {
     fetch('/api/crm/activity')
       .then(res => res.json())
-      .then(data => setCrmActivity(data))
+      .then(data => {
+        setCrmActivity(data);
+        if (isAIEnabled) {
+          generatePartnerSegments(data).then(setAiSegments).catch(console.error);
+        }
+      })
       .catch(console.error);
-  }, []);
+  }, [isAIEnabled]);
 
   const chartData = useMemo(() => {
     if (timeView === 'daily') return salesData.slice(-30);
@@ -378,6 +387,57 @@ export function DashboardPage() {
             </CardContent>
           </Card>
         );
+      case 'partner-segments':
+        let segmentData = [
+          { name: 'Strategic Partners', value: 45, color: '#3b82f6' },
+          { name: 'Growth Partners', value: 30, color: '#8b5cf6' },
+          { name: 'Emerging Partners', value: 25, color: '#10b981' }
+        ];
+        
+        if (isAIEnabled && aiSegments.length > 0) {
+          const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+          segmentData = aiSegments.map((s, i) => ({
+            name: s.segmentName,
+            value: parseInt(s.averageCLV.replace(/[^0-9]/g, '')) || 30, // Fallback to 30 if parsing fails
+            color: colors[i % colors.length]
+          }));
+        }
+
+        return (
+          <Card className="flex flex-col h-full w-full">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 shrink-0">
+              <CardTitle className="text-base">Partner Segments {isAIEnabled && aiSegments.length > 0 && <Badge variant="secondary" className="ml-2 bg-blue-50 text-blue-700">AI Optimized</Badge>}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 min-h-[200px] relative">
+              <MeasuredChart minHeight={200}>
+                {({ width, height }) => (
+                  <PieChart width={width} height={height}>
+                    <Pie
+                      data={segmentData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {segmentData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                  </PieChart>
+                )}
+              </MeasuredChart>
+              {!isAIEnabled && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px] z-10">
+                  <p className="text-sm font-medium text-gray-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100">Enable AI for realtime segmentation</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
       case 'cac-chart':
         const mockPAC = [
           { month: 'Jan', pac: 45 }, { month: 'Feb', pac: 52 }, { month: 'Mar', pac: 48 }, 
@@ -444,11 +504,11 @@ export function DashboardPage() {
           {isEditing ? (
             <>
               <Button variant="outline" onClick={() => {
-                setLayouts(JSON.parse(localStorage.getItem('dashboard-layout-v2') || JSON.stringify(DEFAULT_LAYOUTS)));
+                setLayouts(JSON.parse(localStorage.getItem('dashboard-layout-v3') || JSON.stringify(DEFAULT_LAYOUTS)));
                 setIsEditing(false);
               }}>Cancel</Button>
               <Button onClick={() => {
-                localStorage.setItem('dashboard-layout-v2', JSON.stringify(layouts));
+                localStorage.setItem('dashboard-layout-v3', JSON.stringify(layouts));
                 setIsEditing(false);
               }}>Save Layout</Button>
             </>
