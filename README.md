@@ -15,6 +15,11 @@ A comprehensive B2B Enterprise Dashboard featuring AI-powered contract analysis,
 - **Partner Support & RMA Portal**: A Helpdesk simulation for partners to submit RMAs, defect reports, and general support tickets, complete with an AI-vision approval mockup.
 - **Support & Ticketing (Post-Sale)**: Handle post-sale requests, RMA requests, defect tracking, and monitor SLA breaches with AI remediation alerts.
 - **Contracts & SLA**: Centralized contract management with automated AI extraction of key terms, SLAs, and renewal alerts.
+- **Vendors & Suppliers**: Manage multi-vendor relationships, PO automation, and performance scorecards.
+- **Product Catalog (PIM)**: Product Information Management, dynamic bundle builders, and AI-generated spec sheets.
+- **Customer Success**: Churn prediction, NPS/CSAT collection, and automated Quarterly Business Review (QBR) drafting.
+- **Commissions & Rebates**: Calculate tiered partner rebates, active spiff programs, and MDF rules logic.
+- **Tax & Compliance**: Simulate an Avalara/TaxJar engine tracking multi-jurisdiction nexus thresholds, rule compliance, and VAT alerts.
 - **Sales & Trends**: Deep dive into revenue performance, sector analysis, and pipeline velocity.
 - **AI Insights**: Gemini-driven performance insights, automated sales cycle analysis, and projections.
 - **Anomaly Detection**: Flags statistical deviations in common business KPIs.
