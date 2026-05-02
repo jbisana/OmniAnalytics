@@ -90,8 +90,19 @@ export function MDFPage() {
   const { isAIEnabled } = useAI();
   const [requests, setRequests] = useState(initialRequests);
   const [filter, setFilter] = useState('All');
+  const [userRole, setUserRole] = useState<'Sales Manager' | 'Director' | 'Admin'>('Sales Manager');
+  const [errorToast, setErrorToast] = useState<string | null>(null);
 
   const handleAction = (id: string, action: 'Approved' | 'Rejected') => {
+    const request = requests.find(r => r.id === id);
+    if (!request) return;
+
+    if (action === 'Approved' && request.amount > 10000 && userRole === 'Sales Manager') {
+      setErrorToast(`Approval Hierarchy Enforced: MDF requests over $10,000 require Director or Admin approval. Current role: ${userRole}`);
+      setTimeout(() => setErrorToast(null), 5000);
+      return;
+    }
+
     setRequests(requests.map(r => r.id === id ? { ...r, status: action } : r));
   };
 
@@ -105,6 +116,15 @@ export function MDFPage() {
           <p className="text-gray-500 text-sm mt-1">Manage budget, approve partner requests, and track ROI.</p>
         </div>
         <div className="flex items-center gap-2">
+          <select 
+            value={userRole} 
+            onChange={(e) => setUserRole(e.target.value as any)}
+            className="text-sm bg-white border border-gray-200 rounded-md px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="Sales Manager">Role: Sales Manager</option>
+            <option value="Director">Role: Director</option>
+            <option value="Admin">Role: Admin</option>
+          </select>
           <Button variant="outline" className="bg-white">
             <BarChart3 className="w-4 h-4 mr-2" />
             Export Report
@@ -114,6 +134,13 @@ export function MDFPage() {
           </Button>
         </div>
       </div>
+
+      {errorToast && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center gap-2">
+          <XCircle className="w-5 h-5 shrink-0" />
+          <p className="text-sm font-medium">{errorToast}</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

@@ -25,6 +25,12 @@ import { PartnerTeamManagementPage } from './pages/PartnerTeamManagementPage';
 import { PartnerOrderTrackingPage } from './pages/PartnerOrderTrackingPage';
 import { PartnerMDFPage } from './pages/PartnerMDFPage';
 import { MDFPage } from './pages/MDFPage';
+import { CommissionsPage } from './pages/CommissionsPage';
+import { TaxCompliancePage } from './pages/TaxCompliancePage';
+
+import { CustomerSuccessPage } from './pages/CustomerSuccessPage';
+import { ProductCatalogPage } from './pages/ProductCatalogPage';
+import { VendorManagementPage } from './pages/VendorManagementPage';
 
 export default function App() {
   return (
@@ -44,10 +50,20 @@ export default function App() {
               return <PartnerSegmentsPage />;
             case 'inventory':
               return <InventoryPage />;
+            case 'success':
+              return <CustomerSuccessPage />;
+            case 'catalog':
+              return <ProductCatalogPage />;
+            case 'vendors':
+              return <VendorManagementPage />;
             case 'procurement':
               return <ProcurementPage />;
             case 'mdf':
               return <MDFPage />;
+            case 'commissions':
+              return <CommissionsPage />;
+            case 'tax':
+              return <TaxCompliancePage />;
             case 'audit':
               return <AuditPage />;
             case 'crm':

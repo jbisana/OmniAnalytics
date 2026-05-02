@@ -32,8 +32,11 @@ import {
   ShieldCheck,
   Navigation,
   DollarSign,
-  Wallet
+  Wallet,
+  Box,
+  Heart
 } from 'lucide-react';
+import { NotificationDropdown } from './NotificationDropdown';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -51,9 +54,14 @@ const navItems = [
     { name: 'Invoicing & Billing', path: 'invoicing', icon: Receipt },
     { name: 'Partners', path: 'crm', icon: Users },
     { name: 'Contracts & SLA', path: 'contracts', icon: FileSignature },
+    { name: 'Vendors & Suppliers', path: 'vendors', icon: Truck },
+    { name: 'Product Catalog (PIM)', path: 'catalog', icon: Box },
+    { name: 'Customer Success', path: 'success', icon: Heart },
     { name: 'Inventory & Supply Chain', path: 'inventory', icon: ShoppingBag },
     { name: 'Procurement', path: 'procurement', icon: Truck },
     { name: 'MDF (Funds)', path: 'mdf', icon: DollarSign },
+    { name: 'Commissions & Rebates', path: 'commissions', icon: DollarSign },
+    { name: 'Tax & Compliance', path: 'tax', icon: FileSignature },
     { name: 'Support & Tickets', path: 'tickets', icon: LifeBuoy },
   ]},
   { group: 'Partner Portal Simulator', items: [
@@ -180,10 +188,7 @@ export function DashboardLayout({ children }: { children: (activePath: string) =
               {isAIEnabled ? <ToggleRight className="w-5 h-5 text-blue-600" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
               AI {isAIEnabled ? 'Enabled' : 'Disabled'}
             </button>
-            <button className="relative p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
-            </button>
+            <NotificationDropdown />
           </div>
         </header>
 

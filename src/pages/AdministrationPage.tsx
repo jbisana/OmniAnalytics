@@ -16,9 +16,9 @@ const initialUsers = [
 const availableRoles = ['System Admin', 'Sales Manager', 'Support Agent', 'Read-only API'];
 
 const initialRolePermissions = {
-  'Sales Manager': { viewDashboard: true, manageInventory: false, viewCRM: true, exportData: true },
-  'Support Agent': { viewDashboard: true, manageInventory: false, viewCRM: true, exportData: false },
-  'Read-only API': { viewDashboard: false, manageInventory: false, viewCRM: false, exportData: true }
+  'Sales Manager': { viewDashboard: true, manageInventory: false, viewCRM: true, exportData: true, approveMDF: true, mdfLimit: 10000, approveDiscounts: true },
+  'Support Agent': { viewDashboard: true, manageInventory: false, viewCRM: true, exportData: false, approveMDF: false, mdfLimit: 0, approveDiscounts: false },
+  'Read-only API': { viewDashboard: false, manageInventory: false, viewCRM: false, exportData: true, approveMDF: false, mdfLimit: 0, approveDiscounts: false }
 };
 
 export function AdministrationPage() {
@@ -31,7 +31,7 @@ export function AdministrationPage() {
   const [currentUserRole, setCurrentUserRole] = useState('System Admin');
   
   // Role Permissions
-  const [rolePermissions, setRolePermissions] = useState<Record<string, Record<string, boolean>>>(initialRolePermissions);
+  const [rolePermissions, setRolePermissions] = useState<Record<string, Record<string, any>>>(initialRolePermissions);
 
   const { isAIEnabled, setIsAIEnabled } = useAI();
   const [apiKey, setApiKey] = useState('');
@@ -80,6 +80,14 @@ export function AdministrationPage() {
     setRolePermissions(prev => ({
       ...prev,
       [role]: { ...prev[role], [permKey]: !prev[role][permKey] }
+    }));
+  };
+
+  const handleNumberChange = (role: string, permKey: string, value: string) => {
+    if (!isSystemAdmin) return;
+    setRolePermissions(prev => ({
+      ...prev,
+      [role]: { ...prev[role], [permKey]: parseInt(value) || 0 }
     }));
   };
 
@@ -358,6 +366,40 @@ export function AdministrationPage() {
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
                       />
                       <span className="text-sm text-gray-700">Allow Global Data Export</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        checked={rolePermissions[role].approveMDF} 
+                        disabled={!isSystemAdmin}
+                        onChange={() => handlePermissionToggle(role, 'approveMDF')}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+                      />
+                      <span className="text-sm text-gray-700">Approve MDF Requests</span>
+                    </label>
+                    {rolePermissions[role].approveMDF && (
+                      <div className="pl-6 pb-2">
+                        <label className="flex items-center gap-2">
+                          <span className="text-xs text-gray-600">Max Approval Limit ($)</span>
+                          <input 
+                            type="number"
+                            value={rolePermissions[role].mdfLimit}
+                            disabled={!isSystemAdmin}
+                            onChange={(e) => handleNumberChange(role, 'mdfLimit', e.target.value)}
+                            className="text-xs border border-gray-300 rounded px-2 py-1 w-24 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:bg-gray-50"
+                          />
+                        </label>
+                      </div>
+                    )}
+                    <label className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        checked={rolePermissions[role].approveDiscounts} 
+                        disabled={!isSystemAdmin}
+                        onChange={() => handlePermissionToggle(role, 'approveDiscounts')}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+                      />
+                      <span className="text-sm text-gray-700">Approve Custom Discounts</span>
                     </label>
                   </div>
                 </div>
