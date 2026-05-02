@@ -1,10 +1,63 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { salesData, kpiData } from '@/data/mockData';
 import { DollarSign, Briefcase, Percent, FileSignature, TrendingUp, Calendar, Filter } from 'lucide-react';
-import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, Cell, PieChart, Pie } from 'recharts';
+import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Legend, Cell, PieChart, Pie } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useAI } from '@/contexts/AIContext';
+
+type ChartSize = {
+  width: number;
+  height: number;
+};
+
+function MeasuredChart({
+  children,
+  className = '',
+  minHeight = 300,
+}: {
+  children: (size: ChartSize) => React.ReactNode;
+  className?: string;
+  minHeight?: number;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<ChartSize>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      const nextSize = {
+        width: Math.max(0, Math.floor(rect.width)),
+        height: Math.max(0, Math.floor(rect.height)),
+      };
+
+      setSize((currentSize) => {
+        if (currentSize.width === nextSize.width && currentSize.height === nextSize.height) {
+          return currentSize;
+        }
+
+        return nextSize;
+      });
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const canRenderChart = size.width > 0 && size.height > 0;
+
+  return (
+    <div ref={containerRef} className={cn('h-full w-full', className)} style={{ minHeight }}>
+      {canRenderChart ? children(size) : null}
+    </div>
+  );
+}
 
 export function SalesTrendsPage() {
   const [timeView, setTimeView] = useState<'daily' | 'weekly' | 'monthly'>('daily');
@@ -92,8 +145,9 @@ export function SalesTrendsPage() {
             <CardDescription>Historical contract value data vs AI-driven predictive modeling.</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 min-h-[350px]">
-            <ResponsiveContainer width="100%" height="100%" minHeight={350} minWidth={0}>
-              <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <MeasuredChart minHeight={350}>
+              {({ width, height }) => (
+              <ComposedChart width={width} height={height} data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -110,7 +164,8 @@ export function SalesTrendsPage() {
                   <Line type="monotone" name="AI Pipeline Prediction" dataKey="predicted" stroke="#6366f1" strokeDasharray="6 6" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
                 )}
               </ComposedChart>
-            </ResponsiveContainer>
+              )}
+            </MeasuredChart>
           </CardContent>
         </Card>
 
@@ -121,8 +176,9 @@ export function SalesTrendsPage() {
             <CardDescription>Top performing partner industries.</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 min-h-[350px] flex flex-col items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%" minHeight={350} minWidth={0}>
-              <PieChart>
+            <MeasuredChart minHeight={350}>
+              {({ width, height }) => (
+              <PieChart width={width} height={height}>
                 <Pie
                   data={categoryData}
                   cx="50%"
@@ -139,7 +195,8 @@ export function SalesTrendsPage() {
                 <Tooltip />
                 <Legend verticalAlign="bottom" layout="vertical" align="center" wrapperStyle={{ paddingTop: '20px' }} />
               </PieChart>
-            </ResponsiveContainer>
+              )}
+            </MeasuredChart>
           </CardContent>
         </Card>
       </div>
@@ -152,15 +209,17 @@ export function SalesTrendsPage() {
             <CardDescription>Number of closed-won deals over time.</CardDescription>
           </CardHeader>
           <CardContent className="flex-1 min-h-[300px]">
-            <ResponsiveContainer width="100%" height="100%" minHeight={300} minWidth={0}>
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <MeasuredChart minHeight={300}>
+              {({ width, height }) => (
+              <BarChart width={width} height={height} data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey={timeView === 'daily' ? 'displayDate' : 'date'} axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} />
                 <Tooltip cursor={{fill: '#f3f4f6'}} contentStyle={{ borderRadius: '12px' }} />
                 <Bar dataKey="sales" name="Deals" fill="#93c5fd" radius={[4, 4, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
+              )}
+            </MeasuredChart>
           </CardContent>
         </Card>
 

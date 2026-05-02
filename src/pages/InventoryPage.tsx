@@ -1,11 +1,65 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AlertCircle, Bell, ChevronDown, ChevronUp, Image as ImageIcon, Star, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '@/lib/utils';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+
+type ChartSize = {
+  width: number;
+  height: number;
+};
+
+function MeasuredChart({
+  children,
+  className = '',
+  minHeight = 180,
+}: {
+  children: (size: ChartSize) => React.ReactNode;
+  className?: string;
+  minHeight?: number;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<ChartSize>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      const nextSize = {
+        width: Math.max(0, Math.floor(rect.width)),
+        height: Math.max(0, Math.floor(rect.height)),
+      };
+
+      setSize((currentSize) => {
+        if (currentSize.width === nextSize.width && currentSize.height === nextSize.height) {
+          return currentSize;
+        }
+
+        return nextSize;
+      });
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const canRenderChart = size.width > 0 && size.height > 0;
+
+  return (
+    <div ref={containerRef} className={cn('h-full w-full', className)} style={{ minHeight }}>
+      {canRenderChart ? children(size) : null}
+    </div>
+  );
+}
 
 export function InventoryPage() {
   const [inventory, setInventory] = useState<any[]>([]);
@@ -338,15 +392,17 @@ export function InventoryPage() {
                                   <div className="flex-1 min-h-[200px] flex flex-col">
                                     <h4 className="font-semibold text-gray-900 mb-3">Historical Stock Level</h4>
                                     <div className="flex-1 w-full min-h-[200px] bg-white border border-gray-200 rounded-lg p-4">
-                                      <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
-                                        <LineChart data={dataPoints} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                                      <MeasuredChart minHeight={200}>
+                                        {({ width, height }) => (
+                                        <LineChart width={width} height={height} data={dataPoints} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                                           <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} minTickGap={20} />
                                           <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
                                           <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                                           <Line type="stepAfter" dataKey="stock" name="Stock" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 5 }} />
                                         </LineChart>
-                                      </ResponsiveContainer>
+                                        )}
+                                      </MeasuredChart>
                                     </div>
                                   </div>
                                 );

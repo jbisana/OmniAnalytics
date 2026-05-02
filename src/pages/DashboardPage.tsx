@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { kpiData, salesData, inventoryData } from '@/data/mockData';
 import { ArrowUpRight, ArrowDownRight, DollarSign, ShoppingCart, Percent, Tag, Activity, LayoutDashboard, Plus, X, GripHorizontal, Download, FileText, FileSpreadsheet, Briefcase } from 'lucide-react';
-import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAI } from '@/contexts/AIContext';
@@ -12,6 +12,59 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
+
+type ChartSize = {
+  width: number;
+  height: number;
+};
+
+function MeasuredChart({
+  children,
+  className = '',
+  minHeight = 180,
+}: {
+  children: (size: ChartSize) => React.ReactNode;
+  className?: string;
+  minHeight?: number;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<ChartSize>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      const nextSize = {
+        width: Math.max(0, Math.floor(rect.width)),
+        height: Math.max(0, Math.floor(rect.height)),
+      };
+
+      setSize((currentSize) => {
+        if (currentSize.width === nextSize.width && currentSize.height === nextSize.height) {
+          return currentSize;
+        }
+
+        return nextSize;
+      });
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const canRenderChart = size.width > 0 && size.height > 0;
+
+  return (
+    <div ref={containerRef} className={cn('h-full w-full', className)} style={{ minHeight }}>
+      {canRenderChart ? children(size) : null}
+    </div>
+  );
+}
 
 const AVAILABLE_WIDGETS = [
   { id: 'kpi-revenue', title: 'Total Revenue', type: 'kpi' },
@@ -159,9 +212,10 @@ export function DashboardPage() {
                  <button onClick={(e) => { e.stopPropagation(); setTimeView('monthly') }} className={cn('px-2 py-1 text-xs font-medium rounded-md transition-colors', timeView === 'monthly' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900')}>M</button>
               </div>
             </CardHeader>
-            <CardContent className="flex-1 min-h-[200px] relative">
-              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
-                <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CardContent className="flex-1 min-h-0 w-full">
+              <MeasuredChart>
+                {({ width, height }) => (
+                <ComposedChart width={width} height={height} data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -177,7 +231,8 @@ export function DashboardPage() {
                     <Line type="monotone" dataKey="predicted" stroke="#6366f1" strokeDasharray="5 5" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
                   )}
                 </ComposedChart>
-              </ResponsiveContainer>
+                )}
+              </MeasuredChart>
             </CardContent>
           </Card>
         );
@@ -189,8 +244,9 @@ export function DashboardPage() {
               <CardTitle className="text-base">AI Sales Forecast</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-[200px] relative">
-              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
-                <BarChart data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <MeasuredChart minHeight={200}>
+                {({ width, height }) => (
+                <BarChart width={width} height={height} data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                   <XAxis dataKey={timeView === 'daily' ? 'displayDate' : 'date'} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
@@ -200,7 +256,8 @@ export function DashboardPage() {
                     <Bar dataKey="predicted" name="AI Forecast" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                   )}
                 </BarChart>
-              </ResponsiveContainer>
+                )}
+              </MeasuredChart>
               {!isAIEnabled && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
                   <p className="text-sm font-medium text-gray-500 bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100">Enable AI to see forecast</p>
@@ -332,15 +389,17 @@ export function DashboardPage() {
               <CardTitle className="text-base">PAC Trend</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-[200px]">
-              <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={0}>
-                <BarChart data={mockPAC} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <MeasuredChart minHeight={200}>
+                {({ width, height }) => (
+                <BarChart width={width} height={height} data={mockPAC} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} dy={10} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
                   <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                   <Bar dataKey="pac" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                 </BarChart>
-              </ResponsiveContainer>
+                )}
+              </MeasuredChart>
             </CardContent>
           </Card>
         );
@@ -505,4 +564,3 @@ function KPICard({ title, value, change, trend, icon: Icon }: any) {
     </Card>
   )
 }
-

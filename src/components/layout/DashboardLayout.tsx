@@ -29,7 +29,8 @@ import {
   Store,
   Handshake,
   Headphones,
-  ShieldCheck
+  ShieldCheck,
+  Navigation
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -57,6 +58,7 @@ const navItems = [
     { name: 'Deal Registration', path: 'deal-reg', icon: Handshake },
     { name: 'Admin Hub (Team)', path: 'partner-admin', icon: ShieldCheck },
     { name: 'B2B Catalog', path: 'portal', icon: Store },
+    { name: 'Order Tracking', path: 'partner-tracking', icon: Navigation },
     { name: 'Support & RMAs', path: 'partner-support', icon: Headphones },
   ]},
   { group: 'AI Features', items: [
