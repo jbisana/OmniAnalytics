@@ -1,5 +1,10 @@
 [phases.build]
 cmds = ["npm run build"]
 
+[variables]
+PORT = "3000"
+NIXPACKS_PORT = "3000"
+NODE_ENV = "production"
+
 [start]
 cmd = "npm start"
