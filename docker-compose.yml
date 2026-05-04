@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     image: my-react-app:latest
     ports:
-      - "8080:80"
+      - "8080:3000"
     restart: unless-stopped
     # If your app requires environment variables in production, you can pass them here:
     # environment:

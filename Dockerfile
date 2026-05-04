@@ -24,8 +24,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy /app/dist from builder to /usr/share/nginx/html
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Expose port 3000
+EXPOSE 3000
 
 # Run as non-root: create nginx user if not present, set file ownership
 RUN id -u nginx &>/dev/null || adduser -D -H -s /sbin/nologin nginx && \
