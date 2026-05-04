@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAI } from '@/contexts/AIContext';
-import { Box, Layers, FileText, Search, Plus, List } from 'lucide-react';
+import { Box, Layers, FileText, Search, Plus, List, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const mockProducts = [
