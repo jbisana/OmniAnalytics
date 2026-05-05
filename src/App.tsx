@@ -15,6 +15,7 @@ import { AdministrationPage } from './pages/AdministrationPage';
 import { InvoicingPage } from './pages/InvoicingPage';
 import { CPQPage } from './pages/CPQPage';
 import { SupportTicketsPage } from './pages/SupportTicketsPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AIProvider } from './contexts/AIContext';
 
 import { PartnerPortalPage } from './pages/PartnerPortalPage';
@@ -31,13 +32,18 @@ import { TaxCompliancePage } from './pages/TaxCompliancePage';
 import { CustomerSuccessPage } from './pages/CustomerSuccessPage';
 import { ProductCatalogPage } from './pages/ProductCatalogPage';
 import { VendorManagementPage } from './pages/VendorManagementPage';
+import { AboutPage } from './pages/AboutPage';
+import { TechStackPage } from './pages/TechStackPage';
+
+const queryClient = new QueryClient();
 
 export default function App() {
   return (
-    <AIProvider>
-      <DashboardLayout>
-        {(activePath) => {
-          switch (activePath) {
+    <QueryClientProvider client={queryClient}>
+      <AIProvider>
+        <DashboardLayout>
+          {(activePath) => {
+            switch (activePath) {
             case 'dashboard':
               return <DashboardPage />;
             case 'sales':
@@ -96,6 +102,10 @@ export default function App() {
               return <AdministrationPage />;
             case 'settings':
               return <SettingsPage />;
+            case 'about':
+              return <AboutPage />;
+            case 'tech-stack':
+              return <TechStackPage />;
             default:
               return (
                 <div className="flex items-center justify-center h-full">
@@ -109,6 +119,7 @@ export default function App() {
         }}
       </DashboardLayout>
     </AIProvider>
+    </QueryClientProvider>
   );
 }
 

@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "./styles/variables.css";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
 
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {

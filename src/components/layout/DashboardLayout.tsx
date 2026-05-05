@@ -82,6 +82,10 @@ const navItems = [
     { name: 'Administration', path: 'administration', icon: Shield },
     { name: 'Audit Trail', path: 'audit', icon: History },
     { name: 'Settings', path: 'settings', icon: Settings },
+  ]},
+  { group: 'Info', items: [
+    { name: 'About', path: 'about', icon: LayoutDashboard },
+    { name: 'Tech Stack', path: 'tech-stack', icon: Sparkles },
   ]}
 ];
 
@@ -119,7 +123,7 @@ export function DashboardLayout({ children }: { children: (activePath: string) =
           </button>
         </div>
 
-        <nav className="flex-1 py-6 px-3 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 py-6 px-3 overflow-y-auto custom-scrollbar" style={{}}>
           {navItems.map((group, groupIdx) => (
             <div key={group.group} className={cn("space-y-1", groupIdx !== 0 && "mt-6")}>
               {isOpen && (
